@@ -33,7 +33,7 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
   
   disclapdata <- create.disclapdata.with.weights(x = x, y = y)
 
-  if (verbose >= 1) {
+  if (verbose >= 2) {
     cat(nrow(y), " center", ifelse(nrow(y) == 1, "", "s"), ":\n", sep = "")
     print(y)
     cat("\n")
@@ -59,7 +59,7 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
   
   fit <- NULL
   #contr <- glm.control(epsilon = 1e-12, maxit = 100, trace = verbose >= 2)
-  contr <- glm.control(trace = verbose >= 2)
+  contr <- glm.control(trace = verbose >= 3)
  
   repeat {   
     v.max.last <- 0
@@ -92,7 +92,7 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
         warning(msg)
         
         if (FALSE) {
-          if (verbose >= 1) {
+          if (verbose >= 2) {
             cat("\nWarning: ", msg, "\n", sep = "")
           } else {          
             warning.messages <- c(warning.messages, msg)
@@ -120,7 +120,7 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
       #################################
       disclapdata <- new.disclapdata
       
-      if (calculate.logLs == TRUE || verbose >= 1) {
+      if (calculate.logLs == TRUE || verbose >= 2) {
         logL.full <- get.loglikelihood.full(fit, disclapdata$tau, disclapdata$r)      
         logL.full.iterations <- c(logL.full.iterations, logL.full)
 
@@ -136,7 +136,7 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
         BIC.marginal.iterations <- c(BIC.marginal.iterations, BIC.marginal)
         # <-
 
-        if (verbose >= 1) {
+        if (verbose >= 2) {
           cat("Iteration ", iter, ":\n", sep = "")
           print.fit(fit, disclapdata)
           cat("max|vij - vijk_old| / max(vijk_old) = ", 
@@ -147,7 +147,7 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
       if (!is.na(v.gain) && v.gain < eps) {
         converged <- TRUE
 
-        if (verbose >= 1) {
+        if (verbose >= 2) {
           cat("\nStopping after ", iterations.total, 
             " iterations due to convergence, ", eps, " > ", 
             v.gain, "\n\n", sep = "")
@@ -158,7 +158,7 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
       
       v.max.last <- max(abs(new.v))
       
-      if (verbose >= 1) {
+      if (verbose >= 2) {
         cat("\n")
       }
       
@@ -174,13 +174,13 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
     dist.new.y <- sum(abs(disclapdata$y - new.y))
     
     if (dist.new.y == 0) {
-      if (verbose >= 1) {
+      if (verbose >= 2) {
         cat("Centers were optimal, no need to more EM iterations\n")
       }
       
       break
     } else {
-      if (verbose >= 1) {      
+      if (verbose >= 2) {      
         cat("Current centers not optimal:\n")
         print(disclapdata$y)
         cat("With score = ", centers.score(disclapdata$x, disclapdata$y, disclapdata$v), "\n", sep = "")
@@ -199,9 +199,8 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
     }
   }
   
-  if (verbose == 0) {
+  if (verbose < 2) {
     logL.full <- get.loglikelihood.full(fit, disclapdata$tau, disclapdata$r)      
-
     pred.ps <- get.p.parameters(disclapdata, fit)
     logL.marginal <- get.loglikelihood.marginal(disclapdata = disclapdata, p = pred.ps)
   }
@@ -216,7 +215,7 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
     warning(msg)
     
     if (FALSE) {
-      if (verbose >= 1) {
+      if (verbose >= 2) {
         cat("\nWarning: ", msg, "\n", sep = "")
       } else {          
         warning.messages <- c(warning.messages, msg)

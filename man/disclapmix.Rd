@@ -13,7 +13,7 @@ disclapmix(x, centers = 1:5, use.parallel = FALSE, iterations = 25, eps = 0.001,
   \item{eps}{Convergence stop criteria in the EM algorithm which is compared to \eqn{\frac{\max \{ v_{new} - v_{old} \}}{\max \{ v_{old} \}}}{| max (v\_new - v\_old) | / max(v\_old)}, where \code{v} is a matrix of each observation's probability of belonging to a certain center}
   \item{calculate.logLs}{Whether to calculate the model's log likelihood at each iterations (might be slightly slower than not doing it)}
   \item{plots.prefix}{Where to put plots (NULL to avoid plotting)}
-  \item{verbose}{0 for silent, 1 for verbose}
+  \item{verbose}{from 0 to 3 (both including): 0 for silent, 3 for extra verbose}
 }
 \value{
   \describe{
@@ -44,9 +44,8 @@ demo(simpop)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{disclap}
 \keyword{disclapmix}
-\keyword{disclapmixfit}
-\keyword{discrete Laplace}
-\keyword{EM algorithm}
+\keyword{centers}
+\keyword{use.parallel}
+\keyword{eps}
 

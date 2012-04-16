@@ -28,9 +28,5 @@
 \code{\link{extractMarginalBIC}}
 \code{\link{extractFullBIC}}
 }
-\keyword{disclap}
-\keyword{disclapmix}
-\keyword{disclapmixfit}
-\keyword{discrete Laplace}
-\keyword{EM algorithm}
+\keyword{plot}
 

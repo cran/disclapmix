@@ -13,15 +13,43 @@ function(x, centers = 1:5, use.parallel = FALSE, iterations = 25, eps = 0.001, c
       no.cores <- 4
     }
     
+    cluster.arguments <- list(x = x, iterations = iterations, eps = eps, 
+        calculate.logLs = calculate.logLs, plots.prefix = plots.prefix, 
+        verbose = verbose, stdout = stdout())
+    
+    assign("cluster.arguments", cluster.arguments, envir = .GlobalEnv)
+    
     cl <- makeCluster(no.cores)
-    clusterExport(cl, list("x", "iterations", "eps", "calculate.logLs", "plots.prefix", "verbose"), envir = environment())
+    #clusterExport(cl, list("x", "iterations", "eps", "calculate.logLs", "plots.prefix", "verbose"), envir = environment())
+    clusterExport(cl, "cluster.arguments")
+    
     em.res.s <- clusterApplyLB(cl, centers, function(centercount) {
-      do.em(x = x, centers = centercount, iterations = iterations, eps = eps, calculate.logLs = calculate.logLs, plots.prefix = plots.prefix, verbose = verbose)
+      x <- cluster.arguments$x
+      iterations <- cluster.arguments$iterations
+      eps <- cluster.arguments$eps
+      calculate.logLs <- cluster.arguments$calculate.logLs
+      plots.prefix <- cluster.arguments$plots.prefix
+      verbose <- cluster.arguments$verbose
+      
+      em.res <- do.em(x = x, centers = centercount, 
+        iterations = iterations, eps = eps, calculate.logLs = calculate.logLs, 
+        plots.prefix = plots.prefix, verbose = verbose)
+      
+      return(em.res)
     })
+    
+    rm(cluster.arguments, envir = .GlobalEnv)
+
     stopCluster(cl)
   } else {
     em.res.s <- lapply(centers, function(centercount) {
-      do.em(x = x, centers = centercount, iterations = iterations, eps = eps, calculate.logLs = calculate.logLs, plots.prefix = plots.prefix, verbose = verbose) 
+      em.res <- do.em(x = x, centers = centercount, iterations = iterations, eps = eps, calculate.logLs = calculate.logLs, plots.prefix = plots.prefix, verbose = verbose)
+
+      if (verbose >= 1) {
+        cat("disclapmix for ", centercount, " centers done\n", sep = "")
+      }
+      
+      return(em.res)
     })
   }
   

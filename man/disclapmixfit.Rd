@@ -35,9 +35,5 @@ Mikkel Meyer Andersen <mikl@math.aau.dk> and Poul Svante Eriksen
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{disclap}
-\keyword{disclapmix}
 \keyword{disclapmixfit}
-\keyword{discrete Laplace}
-\keyword{EM algorithm}
 

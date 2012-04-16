@@ -1,2 +1,7 @@
+Changes in version 0.2
+	* disclapmix: verbose more fine grained
+	* FIXED: disclapmix: use.parallel = TRUE created problems under Windows
+	* Corrected minor documentation errors
+		
 Changes in version 0.1
 	* Initial release
