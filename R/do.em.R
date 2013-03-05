@@ -135,19 +135,23 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
         BIC.marginal <- get.marginal.BIC(logL.marginal, disclapdata)
         BIC.marginal.iterations <- c(BIC.marginal.iterations, BIC.marginal)
         # <-
-
-        if (verbose >= 2) {
-          cat("Iteration ", iter, ":\n", sep = "")
-          print.fit(fit, disclapdata)
-          cat("max|vij - vijk_old| / max(vijk_old) = ", 
-            v.max.diff, " / ", v.max.last, " = ", v.gain, "\n", sep = "")
-        }
       }
 
+      if (verbose >= 2) {
+        cat("Iteration ", iter, ":\n", sep = "")
+        print.fit(fit, disclapdata)
+        cat("max|vij - vijk_old| / max(vijk_old) = ", 
+          v.max.diff, " / ", v.max.last, " = ", v.gain, " (eps = ", eps, ")\n", sep = "")
+      } else if (verbose >= 1) {
+        cat("Iteration ", iter, ", ", sep = "")
+        cat("max|vij - vijk_old| / max(vijk_old) = ", 
+          v.max.diff, " / ", v.max.last, " = ", v.gain, " (eps = ", eps, ")\n", sep = "")
+      }
+        
       if (!is.na(v.gain) && v.gain < eps) {
         converged <- TRUE
 
-        if (verbose >= 2) {
+        if (verbose >= 1) {
           cat("\nStopping after ", iterations.total, 
             " iterations due to convergence, ", eps, " > ", 
             v.gain, "\n\n", sep = "")
@@ -174,7 +178,7 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
     dist.new.y <- sum(abs(disclapdata$y - new.y))
     
     if (dist.new.y == 0) {
-      if (verbose >= 2) {
+      if (verbose >= 1) {
         cat("Centers were optimal, no need to more EM iterations\n")
       }
       
@@ -191,6 +195,8 @@ function(x, centers, iterations, eps, calculate.logLs = FALSE, plots.prefix = NU
         cat("With score = ", centers.score(disclapdata$x, new.y, disclapdata$v), "\n", sep = "")
         cat("Number of stepwise mutations between center configurations = ", dist.new.y, "\n", sep = "")
         cat("Doing EM again with the new centers...\n")
+      } else if (verbose >= 1) {
+        cat("Current centers not optimal, moving and making another EM iteration...\n")
       }
       
       converged <- FALSE

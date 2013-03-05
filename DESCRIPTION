@@ -1,8 +1,8 @@
 Package: disclapmix
 Type: Package
 Title: Discrete Laplace mixture inference using the EM algorithm
-Version: 0.2
-Date: 2012-04-16
+Version: 0.3
+Date: 2013-03-05
 Author: Mikkel Meyer Andersen and Poul Svante Eriksen
 Maintainer: Mikkel Meyer Andersen <mikl@math.aau.dk>
 Description: disclapmix makes inference in a mixture of Discrete
@@ -11,6 +11,7 @@ License: GPL-2
 Depends: R (>= 2.14.0), disclap, cluster, parallel
 LazyLoad: yes
 LazyData: yes
-Packaged: 2012-04-16 10:06:19 UTC; mikl
+Packaged: 2013-03-06 09:26:10 UTC; mikl
+NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2012-04-16 11:07:12
+Date/Publication: 2013-03-06 11:29:55

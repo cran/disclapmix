@@ -15,15 +15,11 @@ function(x, centers = 1:5, use.parallel = FALSE, iterations = 25, eps = 0.001, c
     
     cluster.arguments <- list(x = x, iterations = iterations, eps = eps, 
         calculate.logLs = calculate.logLs, plots.prefix = plots.prefix, 
-        verbose = verbose, stdout = stdout())
-    
-    assign("cluster.arguments", cluster.arguments, envir = .GlobalEnv)
+        verbose = verbose)
     
     cl <- makeCluster(no.cores)
-    #clusterExport(cl, list("x", "iterations", "eps", "calculate.logLs", "plots.prefix", "verbose"), envir = environment())
-    clusterExport(cl, "cluster.arguments")
     
-    em.res.s <- clusterApplyLB(cl, centers, function(centercount) {
+    em.res.s <- clusterApplyLB(cl = cl, x = centers, fun = function(centercount, cluster.arguments) {
       x <- cluster.arguments$x
       iterations <- cluster.arguments$iterations
       eps <- cluster.arguments$eps
@@ -36,10 +32,8 @@ function(x, centers = 1:5, use.parallel = FALSE, iterations = 25, eps = 0.001, c
         plots.prefix = plots.prefix, verbose = verbose)
       
       return(em.res)
-    })
+    }, cluster.arguments = cluster.arguments)
     
-    rm(cluster.arguments, envir = .GlobalEnv)
-
     stopCluster(cl)
   } else {
     em.res.s <- lapply(centers, function(centercount) {
