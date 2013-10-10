@@ -1,3 +1,13 @@
+Changes in version 1.0
+  * Totally rewritten such that the algorithm is more memory and CPU 
+    efficient and can be used to analyse larger datasets
+  * Internal IWLS algorithm implemented, much faster than glm.fit for this
+    kind of data. glm.fit is still available. See glm_method in ?disclapmix.
+  * NOTE: Updated API
+
+Changes in version 0.4
+  * Fixed error when there is no variation in a subpopulation
+    
 Changes in version 0.3
   * Fixed error such that verbose = 1 outputs progress information
   * Number of model parameters corrected, which changes marginal and

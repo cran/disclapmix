@@ -4,19 +4,37 @@
 \description{A \code{disclapmixfit} object contains various information about the Discrete Laplace mixture fit by the EM algorithm obtained using the \code{\link{disclapmix}} function.}
 \value{
   \describe{
-    \item{\code{changed.center}}{A vector with the iteration numbers where the centers have changed}
-    \item{\code{disclapdata}}{Structure containing the database \code{x}, the centers \code{y}, the matrix \code{v} of each observation's probability of belonging to a certain center, the data frame with weights used when fitting the model with \code{\link{glm}} \code{dat}, the prior probabilities of belonging to a center \code{tau}, \code{n = nrow(x)}, \code{c = nrow(y)}, and \code{r = ncol(x)}}
-    \item{\code{fit}}{The \code{\link{glm}} fit of the final model}
-    \item{\code{iterations}}{Number of iterations performed in total (including moving centers and reestimating using the EM algorithm)}
-    \item{\code{pred.ps}}{A list where each entry is a vector of locus parameters, each entry in the list corresponds to a center}
-    \item{\code{logL.full}}{Full log likelihood of the final model}
-    \item{\code{logL.marginal}}{Marginal log likelihood of the final model}
-    \item{\code{logL.full.iterations}}{Full log likelihood of the models during the iterations}
-    \item{\code{logL.marginal.iterations}}{Marginal log likelihood of the models during the iterations}
-    \item{\code{BIC.full.iterations}}{BIC based on full log likelihood of the models during the iterations}
-    \item{\code{BIC.marginal.iterations}}{BIC based on marginal log likelihood of the models during the iterations}
-    \item{\code{v.gain.iterations}}{The gain \eqn{\frac{\max \{ v_{new} - v_{old} \}}{\max \{ v_{old} \}}}{| max (v\_new - v\_old) | / max(v\_old)}, where \code{v} is the matrix mentioned above under \code{disclapdata}, during the iterations}
-    \item{\code{tau.iterations}}{The prior probability of belonging to the centers during the iterations}
+    \item{\code{glm_method}}{The supplied GLM method.}
+    \item{\code{init_y}}{The supplied initial central haplotypes, \code{init_y}.}
+    \item{\code{init_y_method}}{The supplied method for choosing initial central haplotypes (only used if \code{init_y} is \code{NULL}).}
+
+    \item{\code{converged}}{Whether the estimation converged or not.}
+       
+    \item{\code{y}}{The central haplotypes, \code{y}.}
+    \item{\code{tau}}{The prior probabilities of belonging to a cluster, \code{tau}.}
+    \item{\code{v_matrix}}{The matrix \code{v} of each observation's probability of belonging to a certain cluster. The rows are in the same order as the observations in \code{x} used to generate this fit.}
+    \item{\code{disclap_parameters}}{A matrix with the estimated dicrete Laplace parameters.}
+    \item{\code{glm_coef}}{The coefficients from the last GLM fit (used to calculate \code{disclap_parameters}).}
+    
+    \item{\code{model_observations}}{Number of observations.}
+    \item{\code{model_parameters}}{Number of parameters in the model.}
+    \item{\code{iterations}}{Number of iterations performed in total (including moving centers and re-estimating using the EM algorithm).}
+
+    \item{\code{logL_full}}{Full log likelihood of the final model.}
+    \item{\code{logL_marginal}}{Marginal log likelihood of the final model.}
+    \item{\code{BIC_full}}{BIC based on the full log likelihood of the final model.}
+    \item{\code{BIC_marginal}}{BIC based on the marginal log likelihood of the final model.}
+
+    \item{\code{v_gain_iterations}}{The gain \eqn{\frac{\max \{ v_{new} - v_{old} \}}{\max \{ v_{old} \}}}{| max (v\_new - v\_old) | / max(v\_old)}, where \code{v} is \code{vic_matrix} mentioned above, during the iterations.}
+    \item{\code{tau_iterations}}{The prior probability of belonging to the centers during the iterations.}
+
+    \item{\code{changed_center}}{A vector with the iteration numbers where the centers have changed.}
+    \item{\code{centers_iterations}}{The centers before the changes in \code{changed_center}.}
+    
+    \item{\code{logL_full_iterations}}{Full log likelihood of the models during the iterations (only calculated when \code{verbose = 2L}).}
+    \item{\code{logL_marginal_iterations}}{Marginal log likelihood of the models during the iterations (only calculated when \code{verbose = 2L}).}
+    \item{\code{BIC_full_iterations}}{BIC based on full log likelihood of the models during the iterations (only calculated when \code{verbose = 2L}).}
+    \item{\code{BIC_marginal_iterations}}{BIC based on marginal log likelihood of the models during the iterations (only calculated when \code{verbose = 2L}).}
   }
 }
 \author{
@@ -26,14 +44,13 @@ Mikkel Meyer Andersen <mikl@math.aau.dk> and Poul Svante Eriksen
 \seealso{
 \code{\link{disclapmix-package}}
 \code{\link{disclapmix}}
-\code{\link{plot.disclapmixfit}}
+\code{\link{clusterdist}}
+\code{\link{clusterprob}}
 \code{\link{predict.disclapmixfit}}
-\code{\link{extractMarginalBIC}}
-\code{\link{extractFullBIC}}
+\code{\link{print.disclapmixfit}}
+\code{\link{summary.disclapmixfit}}
 \code{\link[disclap:disclap-package]{disclap}}
 }
 
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{disclapmixfit}
 

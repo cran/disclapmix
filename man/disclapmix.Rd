@@ -3,24 +3,29 @@
 \title{Discrete Laplace mixture inference using the EM algorithm}
 \description{\code{disclapmix} makes inference in a mixture of Discrete Laplace distributions using the EM algorithm. After the EM algorithm has converged, the centers are moved if the marginal likelihood increases by doing so. And then the EM algorithm is run again. This continues until the centers are not moved.}
 \usage{
-disclapmix(x, centers = 1:5, use.parallel = FALSE, iterations = 25, eps = 0.001, calculate.logLs = FALSE, plots.prefix = NULL, verbose = 1)
+disclapmix(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001, 
+  verbose = 0L, glm_method = "internal_dev", init_y_method = "pam", \dots)
 }
 \arguments{
-  \item{x}{Dataset}
-  \item{centers}{A vector of center counts to fit the model for}
-  \item{use.parallel}{Whether to do the computations in parallel (requires \code{verbose = 0})}
-  \item{iterations}{Maximum number of iterations in the EM-algorithm}
-  \item{eps}{Convergence stop criteria in the EM algorithm which is compared to \eqn{\frac{\max \{ v_{new} - v_{old} \}}{\max \{ v_{old} \}}}{| max (v\_new - v\_old) | / max(v\_old)}, where \code{v} is a matrix of each observation's probability of belonging to a certain center}
-  \item{calculate.logLs}{Whether to calculate the model's log likelihood at each iterations (might be slightly slower than not doing it)}
-  \item{plots.prefix}{Where to put plots (NULL to avoid plotting)}
-  \item{verbose}{from 0 to 3 (both including): 0 for silent, 3 for extra verbose}
+  \item{x}{Dataset.}
+  \item{clusters}{The number of clusters/components to fit the model for.}
+  \item{init_y}{Initial central haplotypes, if NULL, these will be estimated as described under the \code{init_y_method} argument.}
+  \item{iterations}{Maximum number of iterations in the EM-algorithm.}
+  \item{eps}{Convergence stop criteria in the EM algorithm which is compared to \eqn{\frac{\max \{ v_{new} - v_{old} \}}{\max \{ v_{old} \}}}{| max (v\_new - v\_old) | / max(v\_old)}, where \code{v} is a matrix of each observation's probability of belonging to a certain center.}
+  \item{verbose}{from 0 to 2 (both including): 0 for silent, 2 for extra verbose.}
+  \item{glm_method}{\code{internal_dev}, \code{internal_coef} or \code{glm.fit}. Please see details.}
+  \item{init_y_method}{Which cluster method to use for finding initial central haplotypes, y: \code{pam} (recommended) or \code{clara}. Ignored if \code{init_y} is supplied.}
+  \item{...}{Used to detect obsolete usage (when using parameters \code{centers}, \code{use.parallel}, \code{calculate.logLs} or \code{plots.prefix}).}
+}
+\details{
+  \code{glm_method}: 
+  \code{internal_dev} is the reasonable and fast method that uses the deviance as a stopping criterium. \code{internal_coef} is the fastest as it uses the relative changes in the coefficients as a stopping criterium, hence it does not need to compute the deviance until the very end. In normal situations, it would not be a problem to use this method. \code{glm.fit} to use the traditional \code{glm.fit} IWLS implementation and is slow compared to the other two methods.  
+  
+  \code{init_y_method}: 
+  For \code{init_y_method = 'clara'}, the sampling parameters are: \code{samples = 100}, \code{sampsize = min(ceiling(nrow(x)/2), 100 + 2*clusters)} and the random number generator in R is used.
 }
 \value{
-  \describe{
-    \item{\code{best.fit}}{The \code{\link{disclapmixfit}} object with the lowest marginal BIC score}
-    \item{\code{best.fit.index}}{The index such that \code{best.fit = fits[[best.fit.index]]}}
-    \item{\code{fits}}{A list of the \code{\link{disclapmixfit}} objects corresponding to the specified \code{centers} vector}
-  }
+  A \code{\link{disclapmixfit}} object with estimated parameters.
 }
 \author{
 Mikkel Meyer Andersen <mikl@math.aau.dk> and Poul Svante Eriksen
@@ -30,22 +35,40 @@ Mikkel Meyer Andersen <mikl@math.aau.dk> and Poul Svante Eriksen
 \code{\link{disclapmix-package}}
 \code{\link{disclapmix}}
 \code{\link{disclapmixfit}}
-\code{\link{plot.disclapmixfit}}
 \code{\link{predict.disclapmixfit}}
-\code{\link{extractMarginalBIC}}
-\code{\link{extractFullBIC}}
-\code{\link[disclap:disclap-package]{disclap}}
+\code{\link{print.disclapmixfit}}
+\code{\link{summary.disclapmixfit}}
+\code{\link{clusterdist}}
+\code{\link{clusterprob}}
+\code{\link{glm.fit}}
+\code{\link[disclap]{disclap}}
+\code{\link[cluster]{pam}}
+\code{\link[cluster]{clara}}
 }
 \examples{
-\dontrun{
-demo(danes)
-demo(simpop)
-}
+# Generate sample database
+db <- matrix(disclap::rdisclap(1000, 0.3), nrow = 250, ncol = 4)
+
+# Add location parameters
+db <- sapply(1:ncol(db), function(i) as.integer(db[, i]+13+i))
+
+head(db)
+
+fit1 <- disclapmix(db, clusters = 1L, verbose = 1L, glm_method = "glm.fit")
+fit1$disclap_parameters
+fit1$y
+
+# Generate another type of database
+db2 <- matrix(disclap::rdisclap(2000, 0.1), nrow = 500, ncol = 4)
+db2 <- sapply(1:ncol(db2), function(i) as.integer(db2[, i]+14+i))
+fit2 <- disclapmix(rbind(db, db2), clusters = 2L, verbose = 1L)
+fit2$disclap_parameters
+fit2$y
+fit2$tau
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{disclapmix}
-\keyword{centers}
-\keyword{use.parallel}
+\keyword{clusters}
 \keyword{eps}
 

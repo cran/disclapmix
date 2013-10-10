@@ -18,10 +18,8 @@ Maintainer: Mikkel Meyer Andersen <mikl@math.aau.dk>
 \seealso{
 \code{\link{disclapmix}}
 \code{\link{disclapmixfit}}
-\code{\link{plot.disclapmixfit}}
 \code{\link{predict.disclapmixfit}}
-\code{\link{extractMarginalBIC}}
-\code{\link{extractFullBIC}}
+\code{\link{clusterdist}}
 \code{\link[disclap:disclap-package]{disclap}}
 }
 

@@ -7,7 +7,7 @@
 }
 \arguments{
   \item{object}{a \code{\link{disclapmixfit}} object}
-  \item{newdata}{a vector of which plots to do}
+  \item{newdata}{the haplotypes in matrix format to estimate haplotype probabilities for}
   \item{...}{not used}
 }
 \author{
@@ -17,9 +17,10 @@
 \seealso{
 \code{\link{disclapmix}}
 \code{\link{disclapmixfit}}
-\code{\link{plot.disclapmixfit}}
-\code{\link{extractMarginalBIC}}
-\code{\link{extractFullBIC}}
+\code{\link{print.disclapmixfit}}
+\code{\link{summary.disclapmixfit}}
+\code{\link{clusterdist}}
+\code{\link{clusterprob}}
 }
 \keyword{predict}
 
