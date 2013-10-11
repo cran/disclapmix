@@ -1,6 +1,6 @@
-18d25fccf306e155cfd7acb80012728f *DESCRIPTION
+732093011e9a17af874215b330b84e2b *DESCRIPTION
 3069f2d3ba2c340dff7425a1b454db89 *NAMESPACE
-5589a0747b48be83191092f6b400c690 *NEWS
+3733e2a8cc640c8c6f249675166b15f3 *NEWS
 ea111677627dfd84ea351bd975d95944 *R/RcppExports.R
 7f493f6eff2fbb989bbb23466a843d35 *R/clusterdist.R
 7c634ed9d7202ab79b37dabf3b84644f *R/clusterprob.R
@@ -21,5 +21,5 @@ a05e65fd60b557847c3f4dfcb5adabc3 *man/summary.disclapmixfit.Rd
 2a76130e58807d2cb95bb37f27a3c717 *src/Makevars
 002a4427c5e3b97017dc263fd0831a3d *src/Makevars.win
 7712a9f1001ccfa1e00f9219cae2e1cf *src/RcppExports.cpp
-3b65dc1d504cc4906b088990da63a655 *src/disclapfamily.cpp
+3ae507343908a78a99d0e6df717324ff *src/disclapfamily.cpp
 290e6ac3cae3c4dd050fadf8353e5c4b *src/helper.cpp

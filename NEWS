@@ -1,3 +1,6 @@
+Changes in version 1.1
+  * Code changes for OS X, Windows and Solaris compatibility
+  
 Changes in version 1.0
   * Totally rewritten such that the algorithm is more memory and CPU 
     efficient and can be used to analyse larger datasets
