@@ -1,6 +1,6 @@
 data(danes)
 
-clusters <- 2L:5L # L for integer
+clusters <- 1L:5L # L for integer
 
 db <- as.matrix(danes[rep(1:nrow(danes), danes$n), 1:(ncol(danes)-1)])
 res <- lapply(clusters, function(clusters) disclapmix(db, clusters = clusters))

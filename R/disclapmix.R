@@ -1,4 +1,4 @@
-disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001, verbose = 0L, glm_method = "internal_dev", init_y_method = "pam", ...) {
+disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001, verbose = 0L, glm_method = "internal_coef", init_y_method = "pam", ...) {
   dots <- list(...)
   
   if ("centers" %in% names(dots)) {
@@ -52,13 +52,13 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
     warning(paste("A init_y_method specified, '", init_y_method, "', will be ignored as init_y is supplied.", sep = ""))
     init_y_method <- NULL
   }
-  
-  if (glm_method != "glm.fit" && clusters == 1L) {
-    warning("Only one cluster, using the glm.fit method.")
-    glm_method <- "glm.fit"
-  }
 
   check_x(x)
+  
+  #if (glm_method == "glm.fit" && clusters == 1L && ncol(x) == 1L) {
+  #  warning("Only one cluster and one locus, using the internal_dev method.")
+  #  glm_method <- "internal_dev"
+  #}
   
   y <- NULL
   
@@ -130,6 +130,7 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
   ##############################################################################
   
   disclap_parameters <- NULL
+  
   fit <- NULL
 
   iterations_total <- 0L
@@ -184,7 +185,7 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
       disclap_parameters <- NULL
       
       #print(head(vic_matrix))
-      
+ 
       if (glm_method == "glm.fit") {
         fit <- glm.fit(y = response_vector, x = model_matrix, 
           intercept = FALSE, weights = weight_vector, family = DiscreteLaplace(),
@@ -197,17 +198,17 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
           verbose = FALSE, stop_by_deviance = TRUE) 
         disclap_parameters <- convert_coef_to_disclap_parameters_internal(fit$coefficients, clusters)
         colnames(disclap_parameters) <- colnames(x)
-        rownames(disclap_parameters) <- paste("cluster", 1L:clusters, sep = "")    
       } else if (glm_method == "internal_coef") {
         fit <- INTERNAL_glmfit(loci = ncol(x), clusters = clusters, individuals = nrow(x), 
           response_vector = response_vector, apriori_probs = tau_vector, weight_vector = weight_vector, vmat = vic_matrix, 
           verbose = FALSE, stop_by_deviance = FALSE) 
         disclap_parameters <- convert_coef_to_disclap_parameters_internal(fit$coefficients, clusters)
         colnames(disclap_parameters) <- colnames(x)
-        rownames(disclap_parameters) <- paste("cluster", 1L:clusters, sep = "")    
       } else {
         stop("Unsupported glm_method chosen")
       }
+      
+      rownames(disclap_parameters) <- paste("cluster", 1L:clusters, sep = "")    
       
       #print(fit$coefficients)
       #print(disclap_parameters)

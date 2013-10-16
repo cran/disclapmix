@@ -28,9 +28,16 @@ create_model_matrix <- function(x, clusters, model.matrix.function) {
   mat$cluster <- factor(mat$cluster)
   mat$locus <- factor(mat$locus)
   
-  if (clusters == 1L) {
+  if (clusters == 1L && ncol(x) == 1L) {
+    mat$cluster <- NULL
+    mat$locus <- NULL
+    mat <- model.matrix.function(~ 1, mat)
+  } else if (clusters == 1L) {
     mat$cluster <- NULL
     mat <- model.matrix.function(~ locus - 1, mat, contrasts = list(locus = "contr.treatment"))
+  } else if (ncol(x) == 1L) {
+    mat$locus <- NULL
+    mat <- model.matrix.function(~ cluster - 1, mat, contrasts = list(cluster = "contr.treatment"))
   } else {
     mat <- model.matrix.function(~ cluster + locus - 1, mat, contrasts = list(cluster = "contr.treatment", locus = "contr.treatment"))
   }
@@ -89,17 +96,12 @@ convert_coef_to_disclap_parameters <- function(beta, clusters) {
 }
 
 convert_coef_to_disclap_parameters_internal <- function(beta, clusters) {
-  if (clusters == 1L) {
-    pcl <- matrix(exp(beta), nrow = 1)
-    return(pcl)  
-  } else {
-    loci <- length(beta) - clusters
-    theta_ls <- beta[1L:loci]
-    theta_cs <- beta[-(1L:loci)]
-    theta <- outer(theta_cs, theta_ls, "+")
-    pcl <- exp(theta)
-    return(pcl)
-  }
+  loci <- length(beta) - clusters
+  theta_ls <- beta[1L:loci]
+  theta_cs <- beta[-(1L:loci)]
+  theta <- outer(theta_cs, theta_ls, "+")
+  pcl <- exp(theta)
+  return(pcl)
 }
 
 move_centers <- function(x, y, v_matrix) {
@@ -278,8 +280,17 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
     ############################################################################
     
     lin_pred_generic <- outer(beta[ks], beta[(loci+1):(loci+clusters)], "+")
+    
     mu_generic <- apply(lin_pred_generic, 2, disclapglm_linkinv)
+    if (!is.matrix(mu_generic)) { # == 1 cluster
+      mu_generic <- matrix(mu_generic, nrow = loci, ncol = clusters) 
+    }
+    
     var_generic <- apply(mu_generic, 2, disclapglm_varfunc)    
+    if (!is.matrix(var_generic)) { # == 1 cluster
+      var_generic <- matrix(var_generic, nrow = loci, ncol = clusters)
+    }
+    
     apriori_probs_indv <- apriori_probs * individuals
 
     offD <- matrix(0, nrow = loci, ncol = clusters)
@@ -301,7 +312,10 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
 
     OD <- 1-dec$d^2
     OD[1] <- 0.25
-    OD[2:mi] <- 1/OD[2:mi]
+    
+    if (mi >= 2L) { # > 1 cluster
+      OD[2:mi] <- 1/OD[2:mi]
+    }
     
     if (loci == mi) {
       dr <- OD
@@ -316,21 +330,34 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
     }
     
     dia <- (dec$d-2*dec$d*OD)/(1+dec$d^2)
+    if (length(dia) > 1) { # > 1 cluster
+      dia <- diag(dia)
+    }
+
     K <- matrix(0, loci, clusters)
     
     if (loci <= clusters) {
-      K[ks, ks] <- diag(dia) 
+      K[ks, ks] <- dia
     } else {
-      K[1:clusters, 1:clusters] <- diag(dia)
+      K[1:clusters, 1:clusters] <- dia
     }
     
+    if (length(dr) > 1) {
+      dr <- diag(dr)
+    }
+    
+    if (length(ds) > 1) {
+      ds <- diag(ds)
+    }
+
     mI <- matrix(0, loci+clusters, loci+clusters)
     U <- D1^-.5*dec$u
     V <- D2^-.5*dec$v
-    mI[ks, ks] <- U %*% diag(dr) %*% t(U)
+
+    mI[ks, ks] <- U %*% dr %*% t(U)
     mI[ks, (loci+1):(loci+clusters)] <- U %*% K %*% t(V)
     mI[(loci+1):(loci+clusters), ks] <- t(mI[ks,(loci+1):(loci+clusters)])
-    mI[(loci+1):(loci+clusters), (loci+1):(loci+clusters)] <- V %*% diag(ds) %*% t(V)  
+    mI[(loci+1):(loci+clusters), (loci+1):(loci+clusters)] <- V %*% ds %*% t(V)  
     beta_correction <- mI %*% c(y1, y2)
     lin_pred_correction <- rep(beta_correction[ks, 1], clusters * individuals)
     lin_pred_correction <- lin_pred_correction + rep(rep(beta_correction[(loci+1):(loci+clusters), 1], each = loci), individuals)
@@ -338,7 +365,6 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
     beta <- beta + beta_correction
     lin.pred <- lin.pred + lin_pred_correction
     ##################
-
   }
 
   coefficients <- as.numeric(beta)

@@ -4,7 +4,7 @@
 \description{\code{disclapmix} makes inference in a mixture of Discrete Laplace distributions using the EM algorithm. After the EM algorithm has converged, the centers are moved if the marginal likelihood increases by doing so. And then the EM algorithm is run again. This continues until the centers are not moved.}
 \usage{
 disclapmix(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001, 
-  verbose = 0L, glm_method = "internal_dev", init_y_method = "pam", \dots)
+  verbose = 0L, glm_method = "internal_coef", init_y_method = "pam", \dots)
 }
 \arguments{
   \item{x}{Dataset.}
@@ -13,13 +13,13 @@ disclapmix(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001,
   \item{iterations}{Maximum number of iterations in the EM-algorithm.}
   \item{eps}{Convergence stop criteria in the EM algorithm which is compared to \eqn{\frac{\max \{ v_{new} - v_{old} \}}{\max \{ v_{old} \}}}{| max (v\_new - v\_old) | / max(v\_old)}, where \code{v} is a matrix of each observation's probability of belonging to a certain center.}
   \item{verbose}{from 0 to 2 (both including): 0 for silent, 2 for extra verbose.}
-  \item{glm_method}{\code{internal_dev}, \code{internal_coef} or \code{glm.fit}. Please see details.}
+  \item{glm_method}{\code{internal_coef}, \code{internal_dev} or \code{glm.fit}. Please see details.}
   \item{init_y_method}{Which cluster method to use for finding initial central haplotypes, y: \code{pam} (recommended) or \code{clara}. Ignored if \code{init_y} is supplied.}
   \item{...}{Used to detect obsolete usage (when using parameters \code{centers}, \code{use.parallel}, \code{calculate.logLs} or \code{plots.prefix}).}
 }
 \details{
   \code{glm_method}: 
-  \code{internal_dev} is the reasonable and fast method that uses the deviance as a stopping criterium. \code{internal_coef} is the fastest as it uses the relative changes in the coefficients as a stopping criterium, hence it does not need to compute the deviance until the very end. In normal situations, it would not be a problem to use this method. \code{glm.fit} to use the traditional \code{glm.fit} IWLS implementation and is slow compared to the other two methods.  
+  \code{internal_coef} is the fastest as it uses the relative changes in the coefficients as a stopping criterium, hence it does not need to compute the deviance until the very end. In normal situations, it would not be a problem to use this method. \code{internal_dev} is the reasonably fast method that uses the deviance as a stopping criterium (like \code{glm.fit}). \code{glm.fit} to use the traditional \code{glm.fit} IWLS implementation and is slow compared to the other two methods.
   
   \code{init_y_method}: 
   For \code{init_y_method = 'clara'}, the sampling parameters are: \code{samples = 100}, \code{sampsize = min(ceiling(nrow(x)/2), 100 + 2*clusters)} and the random number generator in R is used.

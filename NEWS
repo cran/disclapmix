@@ -1,6 +1,10 @@
+Changes in version 1.2
+  * Changed default glm_method to internal_coef due to speed considerations
+  * Fixed issues when having one cluster, one locus or both
+
 Changes in version 1.1
   * Code changes for OS X, Windows and Solaris compatibility
-  
+
 Changes in version 1.0
   * Totally rewritten such that the algorithm is more memory and CPU 
     efficient and can be used to analyse larger datasets
@@ -10,17 +14,17 @@ Changes in version 1.0
 
 Changes in version 0.4
   * Fixed error when there is no variation in a subpopulation
-    
+
 Changes in version 0.3
   * Fixed error such that verbose = 1 outputs progress information
   * Number of model parameters corrected, which changes marginal and
     full BIC slightly, but only with a constant change meaning that for the 
     same data, the optimal number of centers is the same
-  
+
 Changes in version 0.2
 	* disclapmix: verbose more fine grained
 	* FIXED: disclapmix: use.parallel = TRUE created problems under Windows
 	* Corrected minor documentation errors
-		
+
 Changes in version 0.1
 	* Initial release
