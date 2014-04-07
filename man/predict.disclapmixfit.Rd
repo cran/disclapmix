@@ -19,6 +19,8 @@
 \code{\link{disclapmixfit}}
 \code{\link{print.disclapmixfit}}
 \code{\link{summary.disclapmixfit}}
+\code{\link{simulate.disclapmixfit}}
+\code{\link{haplotype_diversity}}
 \code{\link{clusterdist}}
 \code{\link{clusterprob}}
 }

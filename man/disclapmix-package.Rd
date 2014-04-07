@@ -19,6 +19,9 @@ Maintainer: Mikkel Meyer Andersen <mikl@math.aau.dk>
 \code{\link{disclapmix}}
 \code{\link{disclapmixfit}}
 \code{\link{predict.disclapmixfit}}
+\code{\link{summary.disclapmixfit}}
+\code{\link{simulate.disclapmixfit}}
+\code{\link{haplotype_diversity}}
 \code{\link{clusterdist}}
 \code{\link[disclap:disclap-package]{disclap}}
 }

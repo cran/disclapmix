@@ -1,3 +1,13 @@
+Changes in version 1.3
+  * Added simulate from fitted model
+  * Added haplotype diversity calculation from a fitted model
+  * Added parameter to control number of IRLS iterations (glm_control_maxit)
+  * Added parameter to control IRLS convergence (glm_control_eps)
+  * Changed default iterations to 100L, glm_control_maxit to 50L and 
+    glm_control_eps to 1e-6
+  * Fixed error with no IRLS output for verbose = 2L expect for glm.fit
+  * Small changes in verbose output
+  
 Changes in version 1.2
   * Changed default glm_method to internal_coef due to speed considerations
   * Fixed issues when having one cluster, one locus or both
@@ -8,7 +18,7 @@ Changes in version 1.1
 Changes in version 1.0
   * Totally rewritten such that the algorithm is more memory and CPU 
     efficient and can be used to analyse larger datasets
-  * Internal IWLS algorithm implemented, much faster than glm.fit for this
+  * Internal IRLS algorithm implemented, much faster than glm.fit for this
     kind of data. glm.fit is still available. See glm_method in ?disclapmix.
   * NOTE: Updated API
 

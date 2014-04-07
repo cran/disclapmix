@@ -1,4 +1,6 @@
-disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001, verbose = 0L, glm_method = "internal_coef", init_y_method = "pam", ...) {
+disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.001, verbose = 0L, 
+  glm_method = "internal_coef", glm_control_maxit = 50L, glm_control_eps = 1e-6, init_y_method = "pam", ...) {
+
   dots <- list(...)
   
   if ("centers" %in% names(dots)) {
@@ -30,6 +32,8 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
     stop("clusters must be at least 1L")
   }
   
+  ##
+  
   if (is.null(verbose) || !is.integer(verbose) || length(verbose) != 1 || verbose < 0L | verbose > 2L) {
     stop("verbose must be an integer between 0L and 2L (inclusive, note the required L suffix)")
   }
@@ -41,6 +45,36 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
   if (is.null(glm_method) | !is.character(glm_method) | length(glm_method) != 1L | (glm_method != "glm.fit" & glm_method != "internal_dev" & glm_method != "internal_coef")) {
     stop("For now, only 'glm.fit', 'internal_dev' and 'internal_coef' are supported for glm_method.")
   }
+  
+  ##
+  
+  if (is.null(glm_control_maxit) || length(glm_control_maxit) != 1L) {
+    stop("glm_control_maxit must be a number, not a vector of numbers")
+  }
+      
+  if (!is.integer(glm_control_maxit)) {
+    stop("glm_control_maxit must be an integer, e.g. 25L or similar (note the required L suffix)")
+  }
+      
+  if (glm_control_maxit < 1L) {
+    stop("glm_control_maxit must be at least 1L")
+  }
+  
+  ##
+  
+  if (is.null(glm_control_eps) || length(glm_control_eps) != 1L) {
+    stop("glm_control_eps must be a number, not a vector of numbers")
+  }
+      
+  if (!is.numeric(glm_control_eps)) {
+    stop("glm_control_eps must be a number, e.g. 1e-4 or similar")
+  }
+      
+  if (glm_control_eps <= 0) {
+    stop("glm_control_eps must be greater than 0")
+  }
+  
+  ##
   
   if (is.null(init_y) && (
         is.null(init_y_method) || !is.character(init_y_method) || length(init_y_method) != 1L || (init_y_method != "pam" && init_y_method != "clara")
@@ -59,6 +93,10 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
   #  warning("Only one cluster and one locus, using the internal_dev method.")
   #  glm_method <- "internal_dev"
   #}
+  
+  if (verbose >= 1L) {
+    cat(as.character(Sys.time()), ": Starting estimation for ", clusters, " clusters.\n", sep = "")
+  }
   
   y <- NULL
   
@@ -148,7 +186,7 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
   converged <- FALSE
 
   if (verbose >= 1L) {
-    cat(as.character(Sys.time()), ": Starting the EM algorithm using ", glm_method, " IWLS method.\n", sep = "")
+    cat(as.character(Sys.time()), ": Starting the EM algorithm using ", glm_method, " IRLS method.\n", sep = "")
   }
   
   ##############################################################################
@@ -190,18 +228,18 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
         fit <- glm.fit(y = response_vector, x = model_matrix, 
           intercept = FALSE, weights = weight_vector, family = DiscreteLaplace(),
           start = beta_start,
-          control = glm.control(trace = (verbose >= 2L), epsilon = 1e-4))
+          control = glm.control(trace = (verbose >= 2L), epsilon = glm_control_eps, maxit = glm_control_maxit))
         disclap_parameters <- convert_coef_to_disclap_parameters(fit$coefficients, clusters)
       } else if (glm_method == "internal_dev") {
         fit <- INTERNAL_glmfit(loci = ncol(x), clusters = clusters, individuals = nrow(x), 
           response_vector = response_vector, apriori_probs = tau_vector, weight_vector = weight_vector, vmat = vic_matrix, 
-          verbose = FALSE, stop_by_deviance = TRUE) 
+          verbose = (verbose >= 2L), stop_by_deviance = TRUE, epsilon = glm_control_eps, maxit = glm_control_maxit) 
         disclap_parameters <- convert_coef_to_disclap_parameters_internal(fit$coefficients, clusters)
         colnames(disclap_parameters) <- colnames(x)
       } else if (glm_method == "internal_coef") {
         fit <- INTERNAL_glmfit(loci = ncol(x), clusters = clusters, individuals = nrow(x), 
           response_vector = response_vector, apriori_probs = tau_vector, weight_vector = weight_vector, vmat = vic_matrix, 
-          verbose = FALSE, stop_by_deviance = FALSE) 
+          verbose = (verbose >= 2L), stop_by_deviance = FALSE, epsilon = glm_control_eps, maxit = glm_control_maxit) 
         disclap_parameters <- convert_coef_to_disclap_parameters_internal(fit$coefficients, clusters)
         colnames(disclap_parameters) <- colnames(x)
       } else {
@@ -214,7 +252,7 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
       #print(disclap_parameters)
 
       if (fit$converged == FALSE) {
-        msg <- paste(glm_method, " IWLS did not converge in iteration ", iterations_total, sep = "")
+        msg <- paste(glm_method, " IRLS did not converge in iteration ", iterations_total, sep = "")
         warning(msg)
       }
       
@@ -349,6 +387,9 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 25L, eps = 0.001
 
   ans <- list(
     glm_method = glm_method,
+    glm_control_maxit = glm_control_maxit,
+    glm_control_eps = glm_control_eps,
+    
     init_y = init_y,
     init_y_method = init_y_method,
     

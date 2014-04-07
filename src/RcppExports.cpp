@@ -12,7 +12,7 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        NumericVector mu = Rcpp::as<NumericVector >(muSEXP);
+        Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP );
         NumericVector __result = disclapglm_linkfun(mu);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -27,7 +27,7 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        NumericVector eta = Rcpp::as<NumericVector >(etaSEXP);
+        Rcpp::traits::input_parameter< NumericVector >::type eta(etaSEXP );
         NumericVector __result = disclapglm_linkinv(eta);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -42,7 +42,7 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        NumericVector eta = Rcpp::as<NumericVector >(etaSEXP);
+        Rcpp::traits::input_parameter< NumericVector >::type eta(etaSEXP );
         NumericVector __result = disclapglm_mu_eta(eta);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -57,7 +57,7 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        NumericVector mu = Rcpp::as<NumericVector >(muSEXP);
+        Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP );
         NumericVector __result = disclapglm_varfunc(mu);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -72,8 +72,8 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        double mu = Rcpp::as<double >(muSEXP);
-        double y = Rcpp::as<double >(ySEXP);
+        Rcpp::traits::input_parameter< double >::type mu(muSEXP );
+        Rcpp::traits::input_parameter< double >::type y(ySEXP );
         double __result = disclapglm_loglikeh(mu, y);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -88,9 +88,9 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        NumericVector y = Rcpp::as<NumericVector >(ySEXP);
-        NumericVector mu = Rcpp::as<NumericVector >(muSEXP);
-        NumericVector wt = Rcpp::as<NumericVector >(wtSEXP);
+        Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type wt(wtSEXP );
         double __result = disclapglm_deviance(y, mu, wt);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -105,8 +105,8 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        IntegerMatrix x = Rcpp::as<IntegerMatrix >(xSEXP);
-        int clusters = Rcpp::as<int >(clustersSEXP);
+        Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP );
+        Rcpp::traits::input_parameter< int >::type clusters(clustersSEXP );
         IntegerMatrix __result = rcpp_create_design_matrix(x, clusters);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -121,8 +121,8 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        NumericMatrix vic = Rcpp::as<NumericMatrix >(vicSEXP);
-        int loci = Rcpp::as<int >(lociSEXP);
+        Rcpp::traits::input_parameter< NumericMatrix >::type vic(vicSEXP );
+        Rcpp::traits::input_parameter< int >::type loci(lociSEXP );
         NumericVector __result = rcpp_create_new_weight_vector(vic, loci);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -137,8 +137,8 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        IntegerMatrix x = Rcpp::as<IntegerMatrix >(xSEXP);
-        IntegerMatrix y = Rcpp::as<IntegerMatrix >(ySEXP);
+        Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP );
+        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
         IntegerVector __result = rcpp_create_response_vector(x, y);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -153,10 +153,10 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        IntegerMatrix x = Rcpp::as<IntegerMatrix >(xSEXP);
-        IntegerMatrix y = Rcpp::as<IntegerMatrix >(ySEXP);
-        NumericMatrix p = Rcpp::as<NumericMatrix >(pSEXP);
-        NumericVector tau = Rcpp::as<NumericVector >(tauSEXP);
+        Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP );
+        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
+        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
         NumericMatrix __result = rcpp_calculate_wic(x, y, p, tau);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -171,7 +171,7 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        NumericMatrix wic = Rcpp::as<NumericMatrix >(wicSEXP);
+        Rcpp::traits::input_parameter< NumericMatrix >::type wic(wicSEXP );
         NumericMatrix __result = rcpp_calculate_vic(wic);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
@@ -186,11 +186,29 @@ BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        IntegerMatrix new_data = Rcpp::as<IntegerMatrix >(new_dataSEXP);
-        IntegerMatrix y = Rcpp::as<IntegerMatrix >(ySEXP);
-        NumericMatrix p = Rcpp::as<NumericMatrix >(pSEXP);
-        NumericVector tau = Rcpp::as<NumericVector >(tauSEXP);
+        Rcpp::traits::input_parameter< IntegerMatrix >::type new_data(new_dataSEXP );
+        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
+        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
         NumericVector __result = rcpp_calculate_haplotype_probabilities(new_data, y, p, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// rcpp_simulate
+IntegerMatrix rcpp_simulate(int nsim, IntegerMatrix y, NumericVector tau_cumsum, NumericMatrix disclap_parameters);
+RcppExport SEXP disclapmix_rcpp_simulate(SEXP nsimSEXP, SEXP ySEXP, SEXP tau_cumsumSEXP, SEXP disclap_parametersSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< int >::type nsim(nsimSEXP );
+        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type tau_cumsum(tau_cumsumSEXP );
+        Rcpp::traits::input_parameter< NumericMatrix >::type disclap_parameters(disclap_parametersSEXP );
+        IntegerMatrix __result = rcpp_simulate(nsim, y, tau_cumsum, disclap_parameters);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

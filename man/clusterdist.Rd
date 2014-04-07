@@ -3,7 +3,7 @@
 \title{Calculate distance between clusters}
 \description{\code{clusterdist} calculates the distance between each pair of clusters. The distance measure is based on a symmetric Kullback-Leibler divergence.}
 \usage{
-clusterdist(fit, \dots)
+  clusterdist(fit, \dots)
 }
 \arguments{
   \item{fit}{A \code{\link{disclapmixfit}} object.}
@@ -24,6 +24,8 @@ clusterdist(fit, \dots)
 \code{\link{predict.disclapmixfit}}
 \code{\link{print.disclapmixfit}}
 \code{\link{summary.disclapmixfit}}
+\code{\link{simulate.disclapmixfit}}
+\code{\link{haplotype_diversity}}
 \code{\link[disclap:disclap-package]{disclap}}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

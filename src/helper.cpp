@@ -163,3 +163,42 @@ NumericVector rcpp_calculate_haplotype_probabilities(IntegerMatrix new_data, Int
   return(happrobs);
 }
 
+int rdisclap_single(double p) {
+  if (p < 0.0 || p >= 1.0) {
+    stop("0 <= p < 1 expected");
+  }
+  
+  int res = (int)ceil(log(Rf_runif(0.0, 1.0) * (1 + p)/2)/log(p) - 1);
+  return (int)(Rf_runif(0.0, 1.0) < 0.5 ? -1 : 1) * res;
+}
+
+// [[Rcpp::export]]
+IntegerMatrix rcpp_simulate(int nsim, IntegerMatrix y, NumericVector tau_cumsum, NumericMatrix disclap_parameters) {
+  int loci = y.ncol();
+  int clusters = y.nrow();
+  
+  IntegerMatrix res(nsim, loci);
+  
+  for (int i = 0; i < nsim; i++) {
+    double clus = Rf_runif(0.0, 1.0);
+    int origin = clusters - 1;
+    
+    for (int j = 0; j < clusters; j++) {
+      if (clus <= tau_cumsum[j]) {
+        origin = j;
+        break;
+      }
+    }
+    
+    IntegerVector hap = y(origin, Rcpp::_);
+    
+    for (int k = 0; k < loci; k++) {
+      hap[k] += rdisclap_single(disclap_parameters(origin, k));
+    }
+    
+    res(i, Rcpp::_) = hap;
+  }
+  
+  return res;
+}
+

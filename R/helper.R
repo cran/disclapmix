@@ -204,7 +204,50 @@ function(object, ...) {
   return(invisible(object))
 }
 
-INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, apriori_probs, weight_vector, vmat, verbose = FALSE, stop_by_deviance = TRUE) {
+simulate.disclapmixfit <- function(object, nsim = 1L, seed = NULL, ...) {
+  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
+  
+  if (!is.null(seed)) {
+    stop("seed must be null or else ")
+  }
+  
+  if (is.null(nsim) || length(nsim) != 1L || !is.integer(nsim) || nsim <= 0L) {
+    stop("nsim must be >= 1L (note the L postfix for integer)")
+  }
+  
+  tau_cumsum <- cumsum(object$tau)
+  res <- rcpp_simulate(nsim, object$y, tau_cumsum, object$disclap_parameters)
+
+  return(res)
+}
+
+haplotype_diversity <- function(object, nsim = 1e4L) {
+  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
+  
+  if (is.null(nsim) || length(nsim) != 1L || !is.integer(nsim) || nsim <= 0L) {
+    stop("nsim must be >= 1L (note the L postfix for integer)")
+  }
+  
+  get_db_counts <- function(x) { 
+    order_x <- do.call(order, as.data.frame(x))
+    equal.to.previous <- rowSums(x[tail(order_x, -1),] != x[head(order_x, -1),]) == 0
+    indices <- split(order_x, cumsum(c(TRUE, !equal.to.previous)))
+    Ns <- unlist(lapply(indices, length))
+    return(Ns)
+  }
+  
+  db <- simulate.disclapmixfit(object, nsim = nsim)
+  Ns <- get_db_counts(db)
+  freqs <- Ns / nsim
+  #D <- 1 - sum(freqs^2)
+  D <- (nsim / (nsim - 1)) * (1 - sum(freqs^2))
+  
+  return(D)
+}
+
+INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, apriori_probs, weight_vector, vmat, 
+  verbose = FALSE, stop_by_deviance = TRUE, epsilon = 1e-4, maxit = 25L) {
+  
   converged <- FALSE
   devold <- Inf
   dev <- 0
@@ -240,7 +283,7 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
   lin.pred <- rep(beta[ks], clusters * individuals)
   lin.pred <- lin.pred + rep(rep(beta[-(ks)], each = loci), individuals)
 
-  for (iter in 1:25) {
+  for (iter in 1L:maxit) {
     if (stop_by_deviance) {
       mu_m <- disclapglm_linkinv(lin.pred)
       
@@ -248,7 +291,7 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
       dev <- disclapglm_deviance(d_vec, mu_m, weight_vector)
       
       if (verbose == TRUE) {
-        cat("  IWLS iteration ", iter, ", deviance = ", dev, "\n", sep = "")
+        cat("  IRLS iteration ", iter, ", deviance = ", dev, "\n", sep = "")
       }
       
       # Stop if devience is NaN
@@ -257,7 +300,7 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
         break
       }
       
-      if (abs(dev - devold)/(0.1 + abs(dev)) < 1e-4) { # 1e-4 should be sufficient
+      if (abs(dev - devold)/(0.1 + abs(dev)) < epsilon) {
         converged <- TRUE
         break
       }
@@ -267,10 +310,10 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
       beta_change <- max(abs(beta_correction - beta_correction_old)/(0.1 + abs(beta_correction)))
       
       if (verbose == TRUE) {
-        cat("  IWLS iteration ", iter, ", max relative coefficient change = ", beta_change, "\n", sep = "")
+        cat("  IRLS iteration ", iter, ", max relative coefficient change = ", beta_change, "\n", sep = "")
       }
       
-      if (beta_change < 1e-4) { # 1e-4 should be sufficient
+      if (beta_change < epsilon) {
         converged <- TRUE
         break
       }

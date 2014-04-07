@@ -49,3 +49,7 @@ rcpp_calculate_haplotype_probabilities <- function(new_data, y, p, tau) {
     .Call('disclapmix_rcpp_calculate_haplotype_probabilities', PACKAGE = 'disclapmix', new_data, y, p, tau)
 }
 
+rcpp_simulate <- function(nsim, y, tau_cumsum, disclap_parameters) {
+    .Call('disclapmix_rcpp_simulate', PACKAGE = 'disclapmix', nsim, y, tau_cumsum, disclap_parameters)
+}
+
