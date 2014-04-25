@@ -154,6 +154,15 @@ get_loglikelihood_marginal <- function(x, y, disclap_parameters, tau_vector) {
   return(logL)
 }
 
+get_AIC <- function(logL, individuals, clusters, loci) {
+        #coord  #glm         # tau (sums to 1)
+  k <- (clusters * loci) + (loci + clusters - 1) + (clusters - 1)
+
+  # Our observations is individuals' haplotype
+  # We have a model for the haplotype
+  return(2*k - 2*logL)
+}
+
 get_BIC <- function(logL, individuals, clusters, loci) {
         #coord  #glm         # tau (sums to 1)
   k <- (clusters * loci) + (loci + clusters - 1) + (clusters - 1)

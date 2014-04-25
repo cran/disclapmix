@@ -175,6 +175,8 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
   
   logL_full_iterations <- NULL
   logL_marginal_iterations <- NULL
+  AIC_full_iterations <- NULL
+  AIC_marginal_iterations <- NULL
   BIC_full_iterations <- NULL
   BIC_marginal_iterations <- NULL
   
@@ -286,6 +288,8 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
       if (verbose >= 2L) {
         logL_full <- get_loglikelihood_full(fit, clusters, response_vector, weight_vector, tau_norm = tau_vector^(1/ncol(x)))
         logL_marginal <- get_loglikelihood_marginal(x, y, disclap_parameters, tau_vector)
+        AIC_full <- get_AIC(logL_full, individuals = nrow(x), clusters = clusters, loci = ncol(x))
+        AIC_marginal <- get_AIC(logL_marginal, individuals = nrow(x), clusters = clusters, loci = ncol(x))
         BIC_full <- get_BIC(logL_full, individuals = nrow(x), clusters = clusters, loci = ncol(x))
         BIC_marginal <- get_BIC(logL_marginal, individuals = nrow(x), clusters = clusters, loci = ncol(x))
 
@@ -296,6 +300,8 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
 
         logL_full_iterations <- c(logL_full_iterations, logL_full)
         logL_marginal_iterations <- c(logL_marginal_iterations, logL_marginal)
+        AIC_full_iterations <- c(AIC_full_iterations, AIC_full)
+        AIC_marginal_iterations <- c(AIC_marginal_iterations, AIC_marginal)
         BIC_full_iterations <- c(BIC_full_iterations, BIC_full)
         BIC_marginal_iterations <- c(BIC_marginal_iterations, BIC_marginal)
       }
@@ -375,6 +381,8 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
   if (verbose < 2L) { # If 2L, we already calculated these
     logL_full <- get_loglikelihood_full(fit, clusters, response_vector, weight_vector, tau_norm = tau_vector^(1/ncol(x)))
     logL_marginal <- get_loglikelihood_marginal(x, y, disclap_parameters, tau_vector)
+    AIC_full <- get_AIC(logL_full, individuals = nrow(x), clusters = clusters, loci = ncol(x))
+    AIC_marginal <- get_AIC(logL_marginal, individuals = nrow(x), clusters = clusters, loci = ncol(x))
     BIC_full <- get_BIC(logL_full, individuals = nrow(x), clusters = clusters, loci = ncol(x))
     BIC_marginal <- get_BIC(logL_marginal, individuals = nrow(x), clusters = clusters, loci = ncol(x))
   }
@@ -409,6 +417,8 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
     
     logL_full = logL_full,
     logL_marginal = logL_marginal,  
+    AIC_full = AIC_full,
+    AIC_marginal = AIC_marginal,  
     BIC_full = BIC_full,
     BIC_marginal = BIC_marginal, 
 
@@ -420,6 +430,8 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
     
     logL_full_iterations = logL_full_iterations,
     logL_marginal_iterations = logL_marginal_iterations,
+    AIC_full_iterations = AIC_full_iterations,
+    AIC_marginal_iterations = AIC_marginal_iterations,
     BIC_full_iterations = BIC_full_iterations,
     BIC_marginal_iterations = BIC_marginal_iterations    
   )

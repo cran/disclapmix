@@ -1,0 +1,33 @@
+\name{generate_mixture}
+\alias{generate_mixture}
+\title{Generate a mixture}
+\description{This function can generate a mixture given a list of contributors.}
+\usage{
+  generate_mixture(profiles)
+}
+\arguments{
+  \item{profiles}{A list with profiles to mix.}
+}
+\value{
+  A list, e.g. for use with \code{\link{contributor_pairs}}. See example usage at \code{\link{rank_contributor_pairs}}.
+}
+\author{
+  Mikkel Meyer Andersen <mikl@math.aau.dk> and Poul Svante Eriksen
+}
+\seealso{
+\code{\link{contributor_pairs}}
+\code{\link{rank_contributor_pairs}}
+\code{\link{disclapmix-package}}
+\code{\link{disclapmix}}
+\code{\link{disclapmixfit}}
+\code{\link{clusterprob}}
+\code{\link{predict.disclapmixfit}}
+\code{\link{print.disclapmixfit}}
+\code{\link{summary.disclapmixfit}}
+\code{\link{simulate.disclapmixfit}}
+\code{\link{haplotype_diversity}}
+\code{\link[disclap:disclap-package]{disclap}}
+}
+\keyword{mixture}
+\keyword{separation}
+\keyword{deconvolution}
