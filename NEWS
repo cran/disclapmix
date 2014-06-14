@@ -1,6 +1,12 @@
+Changes in version 1.5
+  * Added AICc (Akaike Information Criterium with finite sample correction)
+  * Added plot functionality for a disclapmix fit
+  * Corrected number of model observations, leading to corrected BIC values (AIC not affected)
+  * Error in full likelihood ratio corrected (not used for model selection)
+    
 Changes in version 1.4
-  * Added separation of two persons mixtures
-  * Added AIC (Akaike Information Criterium) for a model fit
+  * Added separation of two persons mixtures (see example in ?rank_contributor_pairs)
+  * Added AIC (Akaike Information Criterium) for a model disclapmixfit
 
 Changes in version 1.3
   * Added simulate from fitted model

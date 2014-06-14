@@ -132,7 +132,7 @@ move_centers <- function(x, y, v_matrix) {
   return(new_y)
 }
 
-get_loglikelihood_full <- function(fit, clusters, response_vector, weight_vector, tau_norm) { 
+get_loglikelihood_full <- function(fit, clusters, loci, response_vector, weight_vector, tau_norm) { 
   theta <- fit$linear.predictors
   p <- exp(theta)
   #print(head(theta))
@@ -141,7 +141,9 @@ get_loglikelihood_full <- function(fit, clusters, response_vector, weight_vector
   #print(p[p < 0 | p >= 1])
   
   den <- ddisclap(response_vector, p)
-  zi <- rep(1L:clusters, each = length(theta)/clusters)
+  #zi <- rep(1L:clusters, each = length(theta)/clusters)
+  zi <- rep(1L:clusters, length.out = length(weight_vector), each = loci)
+  
   tau_norm <- tau_norm[zi]
   logL <- sum(weight_vector*log(tau_norm*den))
   
@@ -155,21 +157,31 @@ get_loglikelihood_marginal <- function(x, y, disclap_parameters, tau_vector) {
 }
 
 get_AIC <- function(logL, individuals, clusters, loci) {
-        #coord  #glm         # tau (sums to 1)
+        # coord             # glm                  # tau (sums to 1)
   k <- (clusters * loci) + (loci + clusters - 1) + (clusters - 1)
 
-  # Our observations is individuals' haplotype
-  # We have a model for the haplotype
   return(2*k - 2*logL)
 }
 
-get_BIC <- function(logL, individuals, clusters, loci) {
-        #coord  #glm         # tau (sums to 1)
+get_AICc <- function(logL, individuals, clusters, loci) {
+        # coord             # glm                  # tau (sums to 1)
   k <- (clusters * loci) + (loci + clusters - 1) + (clusters - 1)
 
   # Our observations is individuals' haplotype
   # We have a model for the haplotype
-  return(log(individuals)*k - 2*logL)
+  n <- individuals*loci
+  
+  AIC <- 2*k - 2*logL
+  correction <- 2*k*(k+1) / (n-k-1)
+  
+  return(AIC + correction)
+}
+
+get_BIC <- function(logL, individuals, clusters, loci) {
+        # coord             # glm                  # tau (sums to 1)
+  k <- (clusters * loci) + (loci + clusters - 1) + (clusters - 1)
+
+  return(log(individuals*loci)*k - 2*logL)
 }
 
 predict.disclapmixfit <-
@@ -178,6 +190,13 @@ function(object, newdata, ...) {
   probs <- rcpp_calculate_haplotype_probabilities(newdata, object$y, object$disclap_parameters, object$tau)
   return(probs)
 }
+
+#predictNEW <-
+#function(object, newdata, ...) {
+#  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
+#  probs <- rcpp_calculate_haplotype_probabilities_NEW(t.default(newdata), t.default(object$y), object$disclap_parameters, object$tau)
+#  return(probs)
+#}
 
 print.disclapmixfit <-
 function(x, ...) {
@@ -211,6 +230,105 @@ function(object, ...) {
   }
 
   return(invisible(object))
+}
+
+
+plot.disclapmixfit <-
+function(x, which = 1L, ...) {
+  if (!is(x, "disclapmixfit")) stop("x must be a disclapmixfit")
+  
+  object <- x
+  
+  #--
+  
+  prob_masses <- do.call(rbind, lapply(1L:ncol(object$disclap_parameters), function(locus_index) {
+    ps <- object$disclap_parameters[, locus_index]
+    ys <- object$y[, locus_index]
+    xs <- (-1L):1L
+    xs_probs <- lapply(ps, ddisclap, x = xs)
+    
+    while (any(unlist(lapply(xs_probs, sum)) < 0.99)) {
+      xs <- c(min(xs) - 1L, xs, max(xs) + 1L)
+      xs_probs <- lapply(ps, ddisclap, x = xs)
+    }
+    
+    #rownames(xs_probs) <- names(ps)
+    #colnames(xs_probs) <- xs
+    
+    df <- vector("list", length(ps)) 
+    
+    for (df_i in seq_along(ps)) {
+      df[[df_i]] <- data.frame(x = xs + ys[df_i], probX = xs_probs[[df_i]], cluster = rownames(object$disclap_parameters)[df_i], locus = colnames(object$disclap_parameters)[locus_index])
+    }
+    
+    df <- do.call(rbind, df)
+
+    return(df)
+  }))
+  
+  #--
+  
+  packages_needed <- c("ggplot2", "gridExtra", "ggdendro", "scales", "seriation")
+  missing <- c()
+  
+  for (pkg in packages_needed) {
+    pkgAvail <- require(pkg, character.only = TRUE) 
+   
+    if (!pkgAvail) {
+      missing <- c(missing, pkg)
+    }
+  }
+  
+  if (length(missing) != 0L) {
+    warning(paste("Packages ", paste(missing, collapse = ", "), " are not available, hence the plot cannot be created.\nPlease install these if you wish to plot using this function.\nAlternatively, you can use the return value of this function to obtain the necesary data needed to create your own plot function if you for some reason do not want to install the packages.", sep = ""))
+    return(invisible(prob_masses))
+  }
+  
+  #--
+  
+  y_dist <- clusterdist(object)
+  hc <- hclust(y_dist, method = "complete")
+  y_ser_vec <- seriate(y_dist, margin = 1, method = "OLO", hclust = hc)
+  y_order <- get_order(y_ser_vec)
+  hc_reordered <- y_ser_vec[[1L]]
+
+  hcdata <- dendro_data(hc_reordered, type = "rectangle")
+  
+  #--
+  
+  integer_breaks <- function(n = 5, ...) {
+    breaker <- pretty_breaks(n, ...)
+    function(x) {
+       breaks <- breaker(x)
+       breaks[breaks == floor(breaks)]
+    }
+  }
+  
+  prob_masses$ordered_cluster <- factor(prob_masses$cluster,
+         levels = rev(levels(prob_masses$cluster)[y_order]))
+ 
+  
+  # To satisfy R CMD check
+  probX <- NULL
+  
+  p_dists <- ggplot(prob_masses, aes(x = x, y = probX)) + 
+    geom_bar(stat = "identity") + 
+    facet_grid(ordered_cluster ~ locus, scales = "free_x") + 
+    scale_x_continuous(breaks = integer_breaks()) +
+    labs(x = "X", y = "P(X)")
+  
+  #--
+    
+  hcdata$labels$label <- ''
+  p_dendo <- ggdendrogram(hcdata, rotate = TRUE, leaf_labels = FALSE)
+  
+  #--
+  
+  grid.arrange(ggplotGrob(p_dists), ggplotGrob(p_dendo) , ncol = 2, widths = c(4, 2))
+
+  #--
+   
+  return(invisible(prob_masses))
 }
 
 simulate.disclapmixfit <- function(object, nsim = 1L, seed = NULL, ...) {

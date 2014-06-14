@@ -134,7 +134,7 @@ NumericVector rcpp_calculate_haplotype_probabilities(IntegerMatrix new_data, Int
   int n = new_data.nrow();
   int loci = new_data.ncol();
   int clusters = y.nrow();
-  
+
   if (y.ncol() != loci) {
     throw std::range_error("Different number of loci (columns) in x and y");
   }
@@ -162,6 +162,42 @@ NumericVector rcpp_calculate_haplotype_probabilities(IntegerMatrix new_data, Int
   
   return(happrobs);
 }
+
+/*
+// [[Rcpp::export]]
+NumericVector rcpp_calculate_haplotype_probabilities_NEW(IntegerMatrix new_data, IntegerMatrix y, NumericMatrix p, NumericVector tau) {
+  int n = new_data.ncol();
+  int loci = new_data.nrow();
+  int clusters = y.ncol();
+    
+  if (y.nrow() != loci) {
+    throw std::range_error("Different number of loci (columns) in x and y");
+  }
+  
+  NumericVector happrobs(n);
+  
+  for (int i = 0; i < n; i++) {
+    IntegerVector h = new_data(_, i);
+    double hprob = 0.0;
+    
+    for (int c = 0; c < clusters; c++) {
+      IntegerVector yhap = y(_, c);
+      double component_prob = tau(c);
+      
+      for (int l = 0; l < loci; l++) {
+        double pcl = p(c, l);
+        component_prob *= pow(pcl, abs(h(l) - yhap(l)))*((1-pcl)/(1+pcl));
+      }
+      
+      hprob += component_prob;
+    }
+    
+    happrobs(i) = hprob;
+  }
+  
+  return(happrobs);
+}
+*/
 
 int rdisclap_single(double p) {
   if (p < 0.0 || p >= 1.0) {

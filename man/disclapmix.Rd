@@ -64,6 +64,12 @@ fit1 <- disclapmix(db, clusters = 1L, verbose = 1L, glm_method = "glm.fit")
 fit1$disclap_parameters
 fit1$y
 
+fit1b <- disclapmix(db, clusters = 1L, verbose = 1L, glm_method = "internal_coef")
+fit1b$disclap_parameters
+fit1b$y
+
+max(abs(fit1$disclap_parameters - fit1b$disclap_parameters))
+
 # Generate another type of database
 db2 <- matrix(disclap::rdisclap(2000, 0.1), nrow = 500, ncol = 4)
 db2 <- sapply(1:ncol(db2), function(i) as.integer(db2[, i]+14+i))
