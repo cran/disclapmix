@@ -234,7 +234,7 @@ function(object, ...) {
 
 
 plot.disclapmixfit <-
-function(x, which = 1L, ...) {
+function(x, which = 1L, clusdist = clusterdist(x), ...) {
   if (!is(x, "disclapmixfit")) stop("x must be a disclapmixfit")
   
   object <- x
@@ -272,7 +272,8 @@ function(x, which = 1L, ...) {
   missing <- c()
   
   for (pkg in packages_needed) {
-    pkgAvail <- require(pkg, character.only = TRUE) 
+    #pkgAvail <- require(pkg, character.only = TRUE)
+    pkgAvail <- requireNamespace(pkg, quietly = TRUE)  
    
     if (!pkgAvail) {
       missing <- c(missing, pkg)
@@ -286,18 +287,18 @@ function(x, which = 1L, ...) {
   
   #--
   
-  y_dist <- clusterdist(object)
-  hc <- hclust(y_dist, method = "complete")
-  y_ser_vec <- seriate(y_dist, margin = 1, method = "OLO", hclust = hc)
-  y_order <- get_order(y_ser_vec)
+  #clusdist <- clusterdist(object)
+  hc <- hclust(clusdist, method = "complete")
+  y_ser_vec <- seriation::seriate(clusdist, margin = 1, method = "OLO", hclust = hc)
+  y_order <- seriation::get_order(y_ser_vec)
   hc_reordered <- y_ser_vec[[1L]]
 
-  hcdata <- dendro_data(hc_reordered, type = "rectangle")
+  hcdata <- ggdendro::dendro_data.hclust(hc_reordered, type = "rectangle")
   
   #--
   
   integer_breaks <- function(n = 5, ...) {
-    breaker <- pretty_breaks(n, ...)
+    breaker <- scales::pretty_breaks(n, ...)
     function(x) {
        breaks <- breaker(x)
        breaks[breaks == floor(breaks)]
@@ -311,20 +312,21 @@ function(x, which = 1L, ...) {
   # To satisfy R CMD check
   probX <- NULL
   
-  p_dists <- ggplot(prob_masses, aes(x = x, y = probX)) + 
-    geom_bar(stat = "identity") + 
-    facet_grid(ordered_cluster ~ locus, scales = "free_x") + 
-    scale_x_continuous(breaks = integer_breaks()) +
-    labs(x = "X", y = "P(X)")
+  p_dists <- ggplot2::ggplot(prob_masses, ggplot2::aes(x = x, y = probX)) + 
+    ggplot2::geom_bar(stat = "identity") + 
+    ggplot2::facet_grid(ordered_cluster ~ locus, scales = "free_x") + 
+    ggplot2::scale_x_continuous(breaks = integer_breaks()) +
+    ggplot2::labs(x = "X", y = "P(X)")
   
   #--
     
   hcdata$labels$label <- ''
-  p_dendo <- ggdendrogram(hcdata, rotate = TRUE, leaf_labels = FALSE)
+  p_dendo <- ggdendro::ggdendrogram(hcdata, rotate = TRUE, leaf_labels = FALSE)
   
   #--
   
-  grid.arrange(ggplotGrob(p_dists), ggplotGrob(p_dendo) , ncol = 2, widths = c(4, 2))
+  gridExtra::grid.arrange(ggplot2::ggplotGrob(p_dists), ggplot2::ggplotGrob(p_dendo), 
+    ncol = 2, widths = c(4, 2))
 
   #--
    

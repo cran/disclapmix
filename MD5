@@ -1,11 +1,11 @@
-519792bf7f11c9f373493e3e28dc9b66 *DESCRIPTION
+198f3930e7b43129eb4cc42bfeec88ba *DESCRIPTION
 c31557560804b2f2e9764474e145c998 *NAMESPACE
-77703ec0a3a30a75f043d684056e928c *NEWS
+a37e632e5f187aaecbaec103acce1fc6 *NEWS
 276a0f27c5988b6f69f55160cbcf8d71 *R/RcppExports.R
 7f493f6eff2fbb989bbb23466a843d35 *R/clusterdist.R
 7c634ed9d7202ab79b37dabf3b84644f *R/clusterprob.R
 40f6f9094a3bd518cf2d69f451d4a01f *R/disclapmix.R
-f4ef916c5e00df3844d38c568abf5580 *R/helper.R
+ba8a9f6e75ff550f46f6ea6a7a005ff8 *R/helper.R
 151bbea9ed8d2b99a04173296031378b *R/mixture.R
 7cdbaea96bf32def08cf0f8492679aae *data/danes.txt.gz
 efeb0a7829412d55ea9ded5eddbb49d1 *demo/00Index
@@ -19,7 +19,7 @@ dd66cd2f2da8e921a9eb5e741f67f412 *man/contributor_pairs.Rd
 f0beb74f9a7de2d1d66909b272c63894 *man/disclapmixfit.Rd
 f26023a9842339146055021a9c77722a *man/generate_mixture.Rd
 221503e665c7319a2733f74caff2ab63 *man/haplotype_diversity.Rd
-ec5268c7ab983f278d1bbebe1235e474 *man/plot.disclapmixfit.Rd
+f87e81567c2434b3d02a3cf8516e8be8 *man/plot.disclapmixfit.Rd
 9fb4a6c2b948f9093337ebc6ab4efca8 *man/predict.disclapmixfit.Rd
 7fcfe377996920dd5140b7a449f172f3 *man/print.disclapmixfit.Rd
 f92df4b2a336d89869d20c3508bf7129 *man/rank_contributor_pairs.Rd

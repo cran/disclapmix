@@ -3,11 +3,12 @@
 \title{Plot a disclapmixfit}
 \description{Plot a \code{\link{disclapmixfit}} object.}
 \usage{
-  \method{plot}{disclapmixfit}(x, which = 1L, \dots)  
+  \method{plot}{disclapmixfit}(x, which = 1L, clusdist = clusterdist(x), \dots)  
 }
 \arguments{
   \item{x}{a \code{\link{disclapmixfit}} object, usually from a result of a call to \code{disclapmix}.}
   \item{which}{What plot to make. 1L = clusters and their distances.}
+  \item{clusdist}{To use previously computed cluster distances to avoid doing the same computations twice.}
   \item{...}{not used}
 }
 \value{  

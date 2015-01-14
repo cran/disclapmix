@@ -1,3 +1,9 @@
+Changes in version 1.6
+  * Plot functionality for disclapmix fit takes an argument for the 
+    distances between clusters (defaults to clusterdist(x)). This
+    can be used if the distances have been precalculated.
+  * Minor technical changes for keeping CRAN checks happy
+  
 Changes in version 1.5
   * Added AICc (Akaike Information Criterium with finite sample correction)
   * Added plot functionality for a disclapmix fit
