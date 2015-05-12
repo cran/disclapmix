@@ -163,6 +163,51 @@ NumericVector rcpp_calculate_haplotype_probabilities(IntegerMatrix new_data, Int
   return(happrobs);
 }
 
+// [[Rcpp::export]]
+NumericVector rcpp_calculate_haplotype_probabilities_increase_at_alleles(IntegerMatrix new_data, IntegerMatrix y, NumericMatrix p, NumericVector tau, NumericVector constants, IntegerVector increase_at_alleles) {
+  int n = new_data.nrow();
+  int loci = new_data.ncol();
+  int clusters = y.nrow();
+
+  if (y.ncol() != loci) {
+    throw std::range_error("Different number of loci (columns) in x and y");
+  }
+  
+  if (tau.length() != clusters) {
+    throw std::range_error("tau must have as many elements as there are clusters");
+  }
+  
+  if (constants.length() != clusters) {
+    throw std::range_error("constants must have as many elements as there are clusters");
+  }
+  
+  NumericVector happrobs(n);
+  
+  for (int i = 0; i < n; i++) {
+    IntegerVector h = new_data(i, _);
+    double hprob = 0.0;
+    
+    for (int c = 0; c < clusters; c++) {
+      IntegerVector yhap = y(c, _);
+      double component_prob = tau(c);
+      
+      for (int l = 0; l < loci; l++) {
+        double pcl = p(c, l);        
+        double increment = (h(l) == increase_at_alleles(l)) ? 1 : 0;        
+        double p = pow(pcl, abs(h(l) - yhap(l)))*((1-pcl)/(1+pcl));
+        p = (constants(c) * p + increment) / (constants(c) + 1);
+        component_prob *= p;
+      }
+      
+      hprob += component_prob;
+    }
+    
+    happrobs(i) = hprob;
+  }
+  
+  return(happrobs);
+}
+
 /*
 // [[Rcpp::export]]
 NumericVector rcpp_calculate_haplotype_probabilities_NEW(IntegerMatrix new_data, IntegerMatrix y, NumericMatrix p, NumericVector tau) {
@@ -238,3 +283,23 @@ IntegerMatrix rcpp_simulate(int nsim, IntegerMatrix y, NumericVector tau_cumsum,
   return res;
 }
 
+// [[Rcpp::export]]
+int rcpp_find_haplotype_in_matrix(const IntegerMatrix subpop, const IntegerVector h) {
+  int nrows = subpop.nrow();
+  int ncolumns = subpop.ncol();
+  for (int i = 0; i < nrows; i++) {
+    bool found = true;
+    
+    for (int j = 0; j < ncolumns; j++) {
+      if (subpop(i, j) != h(j)) {
+        found = false;
+        break;
+      }
+    }
+
+    if (found) {
+      return i+1; // For R 1-based indexing
+    }
+  }
+  return -1;
+}

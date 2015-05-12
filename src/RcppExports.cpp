@@ -98,6 +98,42 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// rcpp_calculate_haplotype_probabilities_sum
+NumericVector rcpp_calculate_haplotype_probabilities_sum(IntegerMatrix allele_range, IntegerMatrix y, NumericMatrix p, NumericVector tau);
+RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_sum(SEXP allele_rangeSEXP, SEXP ySEXP, SEXP pSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< IntegerMatrix >::type allele_range(allele_rangeSEXP );
+        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
+        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
+        NumericVector __result = rcpp_calculate_haplotype_probabilities_sum(allele_range, y, p, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// rcpp_match_quantities
+NumericVector rcpp_match_quantities(IntegerMatrix allele_range, IntegerMatrix y, NumericMatrix p, NumericVector tau);
+RcppExport SEXP disclapmix_rcpp_match_quantities(SEXP allele_rangeSEXP, SEXP ySEXP, SEXP pSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< IntegerMatrix >::type allele_range(allele_rangeSEXP );
+        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
+        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
+        NumericVector __result = rcpp_match_quantities(allele_range, y, p, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // rcpp_create_design_matrix
 IntegerMatrix rcpp_create_design_matrix(IntegerMatrix x, int clusters);
 RcppExport SEXP disclapmix_rcpp_create_design_matrix(SEXP xSEXP, SEXP clustersSEXP) {
@@ -197,6 +233,26 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// rcpp_calculate_haplotype_probabilities_increase_at_alleles
+NumericVector rcpp_calculate_haplotype_probabilities_increase_at_alleles(IntegerMatrix new_data, IntegerMatrix y, NumericMatrix p, NumericVector tau, NumericVector constants, IntegerVector increase_at_alleles);
+RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_increase_at_alleles(SEXP new_dataSEXP, SEXP ySEXP, SEXP pSEXP, SEXP tauSEXP, SEXP constantsSEXP, SEXP increase_at_allelesSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< IntegerMatrix >::type new_data(new_dataSEXP );
+        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
+        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type constants(constantsSEXP );
+        Rcpp::traits::input_parameter< IntegerVector >::type increase_at_alleles(increase_at_allelesSEXP );
+        NumericVector __result = rcpp_calculate_haplotype_probabilities_increase_at_alleles(new_data, y, p, tau, constants, increase_at_alleles);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // rcpp_simulate
 IntegerMatrix rcpp_simulate(int nsim, IntegerMatrix y, NumericVector tau_cumsum, NumericMatrix disclap_parameters);
 RcppExport SEXP disclapmix_rcpp_simulate(SEXP nsimSEXP, SEXP ySEXP, SEXP tau_cumsumSEXP, SEXP disclap_parametersSEXP) {
@@ -209,6 +265,22 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< NumericVector >::type tau_cumsum(tau_cumsumSEXP );
         Rcpp::traits::input_parameter< NumericMatrix >::type disclap_parameters(disclap_parametersSEXP );
         IntegerMatrix __result = rcpp_simulate(nsim, y, tau_cumsum, disclap_parameters);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// rcpp_find_haplotype_in_matrix
+int rcpp_find_haplotype_in_matrix(const IntegerMatrix subpop, const IntegerVector h);
+RcppExport SEXP disclapmix_rcpp_find_haplotype_in_matrix(SEXP subpopSEXP, SEXP hSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const IntegerMatrix >::type subpop(subpopSEXP );
+        Rcpp::traits::input_parameter< const IntegerVector >::type h(hSEXP );
+        int __result = rcpp_find_haplotype_in_matrix(subpop, h);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

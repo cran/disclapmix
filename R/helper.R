@@ -191,6 +191,19 @@ function(object, newdata, ...) {
   return(probs)
 }
 
+predict_increase_at_alleles <-
+function(object, newdata, constants, increase_at_alleles, ...) {
+  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
+  if (any(constants < 0)) stop("constants must be >= 0")
+  if (length(constants) == 1L) constants <- rep(constants, length(object$tau))
+  if (length(constants) != length(object$tau)) stop("constants must have length 1 or number of clusters")
+  if (!is.vector(increase_at_alleles) || !is.integer(increase_at_alleles) || length(increase_at_alleles) != ncol(object$y)) stop("increase_at_alleles must be an integer vector with length corresponding to number of loci")
+  #dbsize <- object$model_observations / ncol(object$y)
+  #constants <- dbsize * object$tau
+  probs <- rcpp_calculate_haplotype_probabilities_increase_at_alleles(newdata, object$y, object$disclap_parameters, object$tau, constants, increase_at_alleles) 
+  return(probs)
+}
+
 #predictNEW <-
 #function(object, newdata, ...) {
 #  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
@@ -287,16 +300,6 @@ function(x, which = 1L, clusdist = clusterdist(x), ...) {
   
   #--
   
-  #clusdist <- clusterdist(object)
-  hc <- hclust(clusdist, method = "complete")
-  y_ser_vec <- seriation::seriate(clusdist, margin = 1, method = "OLO", hclust = hc)
-  y_order <- seriation::get_order(y_ser_vec)
-  hc_reordered <- y_ser_vec[[1L]]
-
-  hcdata <- ggdendro::dendro_data.hclust(hc_reordered, type = "rectangle")
-  
-  #--
-  
   integer_breaks <- function(n = 5, ...) {
     breaker <- scales::pretty_breaks(n, ...)
     function(x) {
@@ -304,31 +307,57 @@ function(x, which = 1L, clusdist = clusterdist(x), ...) {
        breaks[breaks == floor(breaks)]
     }
   }
-  
-  prob_masses$ordered_cluster <- factor(prob_masses$cluster,
-         levels = rev(levels(prob_masses$cluster)[y_order]))
  
-  
   # To satisfy R CMD check
-  probX <- NULL
-  
-  p_dists <- ggplot2::ggplot(prob_masses, ggplot2::aes(x = x, y = probX)) + 
-    ggplot2::geom_bar(stat = "identity") + 
-    ggplot2::facet_grid(ordered_cluster ~ locus, scales = "free_x") + 
-    ggplot2::scale_x_continuous(breaks = integer_breaks()) +
-    ggplot2::labs(x = "X", y = "P(X)")
-  
+  probX <- NULL  
   #--
+  
+  if (nrow(object$y) == 1L) {
+    p_dists <- ggplot2::ggplot(prob_masses, ggplot2::aes(x = x, y = probX)) + 
+      ggplot2::geom_bar(stat = "identity") + 
+      ggplot2::facet_grid(~ locus, scales = "free_x") + 
+      ggplot2::scale_x_continuous(breaks = integer_breaks()) +
+      ggplot2::labs(x = "X", y = "P(X)") 
+      
+    print(p_dists)
+  } else {
+    hc <- hclust(clusdist, method = "complete")
     
-  hcdata$labels$label <- ''
-  p_dendo <- ggdendro::ggdendrogram(hcdata, rotate = TRUE, leaf_labels = FALSE)
-  
-  #--
-  
-  gridExtra::grid.arrange(ggplot2::ggplotGrob(p_dists), ggplot2::ggplotGrob(p_dendo), 
-    ncol = 2, widths = c(4, 2))
+    if (nrow(object$y) > 2L) {
+      #y_ser_vec <- seriation::seriate(clusdist, margin = 1, method = "OLO", hclust = hc)
+      y_ser_vec <- seriation::seriate(clusdist, method = "OLO", hclust = hc)
+      y_order <- seriation::get_order(y_ser_vec)
+      hc_reordered <- y_ser_vec[[1L]]
+    } else {
+      hc_reordered <- hc
+      y_order <- 1L:nrow(object$y)
+    }
+    
+    prob_masses$ordered_cluster <- factor(prob_masses$cluster,
+         levels = rev(levels(prob_masses$cluster)[y_order]))
 
-  #--
+    p_dists <- ggplot2::ggplot(prob_masses, ggplot2::aes(x = x, y = probX)) + 
+      ggplot2::geom_bar(stat = "identity") + 
+      ggplot2::facet_grid(ordered_cluster ~ locus, scales = "free_x") + 
+      ggplot2::scale_x_continuous(breaks = integer_breaks()) +
+      ggplot2::labs(x = "X", y = "P(X)") 
+  
+    # same ^
+  
+    #clusdist <- clusterdist(object)
+
+    hcdata <- ggdendro::dendro_data.hclust(hc_reordered, type = "rectangle")
+
+    hcdata$labels$label <- ''
+    p_dendo <- ggdendro::ggdendrogram(hcdata, rotate = TRUE, leaf_labels = FALSE)
+    
+    #--
+    
+    gridExtra::grid.arrange(ggplot2::ggplotGrob(p_dists), ggplot2::ggplotGrob(p_dendo), 
+      ncol = 2, widths = c(4, 2))
+
+    #--
+  }
    
   return(invisible(prob_masses))
 }
@@ -554,5 +583,97 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
   )
 
   return(ans)
+}
+
+happrobsum <- function(object, alleles, ...) {
+  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
+  if (ncol(alleles) != ncol(object$y)) stop("Please specify alleles for exactly the number of loci the model was fitted for")
+  prob_sum <- rcpp_calculate_haplotype_probabilities_sum(alleles, object$y, object$disclap_parameters, object$tau)
+  return(prob_sum)
+}
+
+#match_prob_quantities <- function(object, alleles, ...) {
+#  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
+#  if (ncol(alleles) != ncol(object$y)) stop("Please specify alleles for exactly the number of loci the model was fitted for")
+#  ms <- rcpp_match_quantities(alleles, object$y, object$disclap_parameters, object$tau)
+#  return(ms)
+#}
+
+#  * New function to calculate theta
+#estimate_theta <- function(object, alleles, ...) {
+#  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
+#  if (ncol(alleles) != ncol(object$y)) stop("Please specify alleles for exactly the number of loci the model was fitted for")
+#  if (nrow(object$y) <= 1L) stop("Need a fit with at least two (2) clusters")
+#  
+##  #prob_sums <- happrobsum(object, alleles)
+#  ms <- match_prob_quantities(object, alleles)
+#
+#  mis <- unlist(lapply(1L:nrow(object$y), function(j) {
+#    rcpp_calculate_haplotype_probabilities_sum(alleles, 
+#      object$y[j, , drop = FALSE], object$disclap_parameters[j, , drop = FALSE], 1)[2]
+#  }))
+#  
+#  mW <- mean(mis)
+#  mA <- mean(ms[upper.tri(ms)])
+#  betaW <- (mW - mA) / (1 - mA)
+#  
+#  return(betaW)
+##  #Mw <- betaW + (1-betaW)*as.numeric(prob_sums[2L])
+##  #theta <- (Mw - prob_sums[2L]) / (1 - prob_sums[2L])
+##
+##  #return(list(theta = betaW, prob_sums = prob_sums))
+##
+##  #return(list(theta = theta, prob_sums = prob_sums))
+##}
+
+#  * New helper function: convert_to_compact_db
+convert_to_compact_db <- function(x) { 
+  #if (!is.matrix(x) || !is.data.frame(x)) {
+  #  stop("x must be a matrix or data.frame")
+  #}
+
+  if (nrow(x) <= 1L) {
+    ret <- data.frame(x, Ndb = 1L)
+    ret$ind <- list("1" = 1L)
+    return(ret)
+  }
+
+  #if (is.matrix(x) && (dim(x)[2L] == 1L)) {
+  #  x <- as.vector(x) 
+  #}
+ 
+  x_ord <- do.call(order, as.data.frame(x))
+   
+  #if (is.vector(x)) {
+  #  same_as_previous <- x[tail(x_ord, -1L)] == x[head(x_ord, -1L)]
+  #} else {
+    same_as_previous <- rowSums(x[tail(x_ord, -1L), , drop = FALSE] != x[head(x_ord, -1L), , drop = FALSE]) == 0L
+  #}	
+ 
+  indices <- split(x_ord, cumsum(c(TRUE, !same_as_previous)))
+ 
+  #if (is.vector(x)) {
+  #  x <- x[sapply(indices, function (x) x[[1L]]), drop = FALSE]
+  #} else {
+    x <- x[sapply(indices, function (x) x[[1L]]), , drop = FALSE]
+  #}
+  
+  return(data.frame(x, Ndb = sapply (indices, length), ind = I(indices)))
+}
+
+#  * New helper function: find_haplotype_in_matrix
+find_haplotype_in_matrix <- function(mat, haplotype) {
+  if (!is.matrix(mat) || !is.integer(mat) || !is.integer(haplotype)) {
+    stop("mat must be an integer matrix and haplotype an integer vector")
+  }
+  if (length(haplotype) != ncol(mat)) stop("Wrong dimensions")
+
+  i <- rcpp_find_haplotype_in_matrix(mat, haplotype)
+
+  if (i <= 0L) {
+    i <- NULL
+  }
+
+  return(i)
 }
 

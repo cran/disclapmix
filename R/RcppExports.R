@@ -25,6 +25,14 @@ disclapglm_deviance <- function(y, mu, wt) {
     .Call('disclapmix_disclapglm_deviance', PACKAGE = 'disclapmix', y, mu, wt)
 }
 
+rcpp_calculate_haplotype_probabilities_sum <- function(allele_range, y, p, tau) {
+    .Call('disclapmix_rcpp_calculate_haplotype_probabilities_sum', PACKAGE = 'disclapmix', allele_range, y, p, tau)
+}
+
+rcpp_match_quantities <- function(allele_range, y, p, tau) {
+    .Call('disclapmix_rcpp_match_quantities', PACKAGE = 'disclapmix', allele_range, y, p, tau)
+}
+
 rcpp_create_design_matrix <- function(x, clusters) {
     .Call('disclapmix_rcpp_create_design_matrix', PACKAGE = 'disclapmix', x, clusters)
 }
@@ -49,7 +57,15 @@ rcpp_calculate_haplotype_probabilities <- function(new_data, y, p, tau) {
     .Call('disclapmix_rcpp_calculate_haplotype_probabilities', PACKAGE = 'disclapmix', new_data, y, p, tau)
 }
 
+rcpp_calculate_haplotype_probabilities_increase_at_alleles <- function(new_data, y, p, tau, constants, increase_at_alleles) {
+    .Call('disclapmix_rcpp_calculate_haplotype_probabilities_increase_at_alleles', PACKAGE = 'disclapmix', new_data, y, p, tau, constants, increase_at_alleles)
+}
+
 rcpp_simulate <- function(nsim, y, tau_cumsum, disclap_parameters) {
     .Call('disclapmix_rcpp_simulate', PACKAGE = 'disclapmix', nsim, y, tau_cumsum, disclap_parameters)
+}
+
+rcpp_find_haplotype_in_matrix <- function(subpop, h) {
+    .Call('disclapmix_rcpp_find_haplotype_in_matrix', PACKAGE = 'disclapmix', subpop, h)
 }
 

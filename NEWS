@@ -1,3 +1,9 @@
+Changes in version 1.6.1
+  * Plot functionality for disclapmix was broken for fits with only one 
+    subpopulation/cluster.
+  * New function to calculate the sum of haplotype probabilities, where the haplotypes
+    are defined by a locus wide range (by allele min and max).
+
 Changes in version 1.6
   * Plot functionality for disclapmix fit takes an argument for the 
     distances between clusters (defaults to clusterdist(x)). This

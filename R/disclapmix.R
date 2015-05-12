@@ -422,7 +422,7 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
     v_matrix = vic_matrix,
     disclap_parameters = disclap_parameters,
     glm_coef = fit$coefficients,
-        
+    
     model_observations = prod(dim(x)),
     model_parameters = ((clusters * ncol(x)) + (ncol(x) + clusters - 1) + (clusters - 1)),
     iterations = iterations_total,  

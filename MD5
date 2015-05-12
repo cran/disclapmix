@@ -1,11 +1,11 @@
-198f3930e7b43129eb4cc42bfeec88ba *DESCRIPTION
-c31557560804b2f2e9764474e145c998 *NAMESPACE
-a37e632e5f187aaecbaec103acce1fc6 *NEWS
-276a0f27c5988b6f69f55160cbcf8d71 *R/RcppExports.R
+9b85e6118651ae07a2321ca96e14aaf1 *DESCRIPTION
+5baff8e945f16433a8df5f03b4dffc27 *NAMESPACE
+bd195351e4ab034441a375ec8edb2af0 *NEWS
+295ba489c64f92be45d53431c4791957 *R/RcppExports.R
 7f493f6eff2fbb989bbb23466a843d35 *R/clusterdist.R
 7c634ed9d7202ab79b37dabf3b84644f *R/clusterprob.R
-40f6f9094a3bd518cf2d69f451d4a01f *R/disclapmix.R
-ba8a9f6e75ff550f46f6ea6a7a005ff8 *R/helper.R
+1fe6a36fef705d7af893b9b7ff9f1987 *R/disclapmix.R
+62f27b755b08dccee1d9796362198587 *R/helper.R
 151bbea9ed8d2b99a04173296031378b *R/mixture.R
 7cdbaea96bf32def08cf0f8492679aae *data/danes.txt.gz
 efeb0a7829412d55ea9ded5eddbb49d1 *demo/00Index
@@ -19,6 +19,7 @@ dd66cd2f2da8e921a9eb5e741f67f412 *man/contributor_pairs.Rd
 f0beb74f9a7de2d1d66909b272c63894 *man/disclapmixfit.Rd
 f26023a9842339146055021a9c77722a *man/generate_mixture.Rd
 221503e665c7319a2733f74caff2ab63 *man/haplotype_diversity.Rd
+dde7a9326cf7c55516da046259b6cbea *man/happrobsum.Rd
 f87e81567c2434b3d02a3cf8516e8be8 *man/plot.disclapmixfit.Rd
 9fb4a6c2b948f9093337ebc6ab4efca8 *man/predict.disclapmixfit.Rd
 7fcfe377996920dd5140b7a449f172f3 *man/print.disclapmixfit.Rd
@@ -27,6 +28,7 @@ f92df4b2a336d89869d20c3508bf7129 *man/rank_contributor_pairs.Rd
 60cfd084f2c1f8b85735096cf537def7 *man/summary.disclapmixfit.Rd
 c310ed3e59f90b0755e520764f621eac *src/Makevars
 6b327c67beca2e7503bf8d8caed594cf *src/Makevars.win
-c5055115c6703defac8356b8be35494e *src/RcppExports.cpp
+1d31c28065c7de89d7d33805d5c6997e *src/RcppExports.cpp
 3ae507343908a78a99d0e6df717324ff *src/disclapfamily.cpp
-08f9f3153e3d6c63f7e4d9f7243adcd7 *src/helper.cpp
+67749ab0b2efcc0132a2e862944bf172 *src/happrobsum.cpp
+99e0a9b768cfdf5ff3ccd220b8f9a5d8 *src/helper.cpp
