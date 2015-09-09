@@ -164,6 +164,38 @@ NumericVector rcpp_calculate_haplotype_probabilities(IntegerMatrix new_data, Int
 }
 
 // [[Rcpp::export]]
+NumericMatrix rcpp_calculate_haplotype_probabilities_clusterwise(IntegerMatrix new_data, IntegerMatrix y, NumericMatrix p, NumericVector tau) {
+  int n = new_data.nrow();
+  int loci = new_data.ncol();
+  int clusters = y.nrow();
+
+  if (y.ncol() != loci) {
+    throw std::range_error("Different number of loci (columns) in x and y");
+  }
+  
+  NumericMatrix happrobs(n, clusters);
+  
+  for (int i = 0; i < n; i++) {
+    IntegerVector h = new_data(i, _);
+    
+    for (int c = 0; c < clusters; c++) {
+      IntegerVector yhap = y(c, _);
+      double component_prob = 1.0;
+      
+      for (int l = 0; l < loci; l++) {
+        double pcl = p(c, l);
+        component_prob *= pow(pcl, abs(h(l) - yhap(l)))*((1-pcl)/(1+pcl));
+      }
+      
+      happrobs(i, c) = component_prob;
+    }    
+  }
+  
+  return(happrobs);
+}
+
+/*
+// [[Rcpp::export]]
 NumericVector rcpp_calculate_haplotype_probabilities_increase_at_alleles(IntegerMatrix new_data, IntegerMatrix y, NumericMatrix p, NumericVector tau, NumericVector constants, IntegerVector increase_at_alleles) {
   int n = new_data.nrow();
   int loci = new_data.ncol();
@@ -207,6 +239,7 @@ NumericVector rcpp_calculate_haplotype_probabilities_increase_at_alleles(Integer
   
   return(happrobs);
 }
+*/
 
 /*
 // [[Rcpp::export]]
@@ -303,3 +336,4 @@ int rcpp_find_haplotype_in_matrix(const IntegerMatrix subpop, const IntegerVecto
   }
   return -1;
 }
+

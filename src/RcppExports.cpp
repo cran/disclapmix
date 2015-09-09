@@ -9,281 +9,287 @@ using namespace Rcpp;
 NumericVector disclapglm_linkfun(NumericVector mu);
 RcppExport SEXP disclapmix_disclapglm_linkfun(SEXP muSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP );
-        NumericVector __result = disclapglm_linkfun(mu);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    __result = Rcpp::wrap(disclapglm_linkfun(mu));
+    return __result;
 END_RCPP
 }
 // disclapglm_linkinv
 NumericVector disclapglm_linkinv(NumericVector eta);
 RcppExport SEXP disclapmix_disclapglm_linkinv(SEXP etaSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type eta(etaSEXP );
-        NumericVector __result = disclapglm_linkinv(eta);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type eta(etaSEXP);
+    __result = Rcpp::wrap(disclapglm_linkinv(eta));
+    return __result;
 END_RCPP
 }
 // disclapglm_mu_eta
 NumericVector disclapglm_mu_eta(NumericVector eta);
 RcppExport SEXP disclapmix_disclapglm_mu_eta(SEXP etaSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type eta(etaSEXP );
-        NumericVector __result = disclapglm_mu_eta(eta);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type eta(etaSEXP);
+    __result = Rcpp::wrap(disclapglm_mu_eta(eta));
+    return __result;
 END_RCPP
 }
 // disclapglm_varfunc
 NumericVector disclapglm_varfunc(NumericVector mu);
 RcppExport SEXP disclapmix_disclapglm_varfunc(SEXP muSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP );
-        NumericVector __result = disclapglm_varfunc(mu);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    __result = Rcpp::wrap(disclapglm_varfunc(mu));
+    return __result;
 END_RCPP
 }
 // disclapglm_loglikeh
 double disclapglm_loglikeh(double mu, double y);
 RcppExport SEXP disclapmix_disclapglm_loglikeh(SEXP muSEXP, SEXP ySEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type mu(muSEXP );
-        Rcpp::traits::input_parameter< double >::type y(ySEXP );
-        double __result = disclapglm_loglikeh(mu, y);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< double >::type y(ySEXP);
+    __result = Rcpp::wrap(disclapglm_loglikeh(mu, y));
+    return __result;
 END_RCPP
 }
 // disclapglm_deviance
 double disclapglm_deviance(NumericVector y, NumericVector mu, NumericVector wt);
 RcppExport SEXP disclapmix_disclapglm_deviance(SEXP ySEXP, SEXP muSEXP, SEXP wtSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type wt(wtSEXP );
-        double __result = disclapglm_deviance(y, mu, wt);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type wt(wtSEXP);
+    __result = Rcpp::wrap(disclapglm_deviance(y, mu, wt));
+    return __result;
+END_RCPP
+}
+// rcpp_calculate_haplotype_probabilities_sum_CLASS
+List rcpp_calculate_haplotype_probabilities_sum_CLASS(List fits, IntegerMatrix allele_range);
+RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_sum_CLASS(SEXP fitsSEXP, SEXP allele_rangeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type fits(fitsSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type allele_range(allele_rangeSEXP);
+    __result = Rcpp::wrap(rcpp_calculate_haplotype_probabilities_sum_CLASS(fits, allele_range));
+    return __result;
+END_RCPP
+}
+// rcpp_calculate_haplotype_probabilities_sum_CLASS_Cache
+List rcpp_calculate_haplotype_probabilities_sum_CLASS_Cache(List fits, IntegerMatrix allele_range);
+RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_sum_CLASS_Cache(SEXP fitsSEXP, SEXP allele_rangeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type fits(fitsSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type allele_range(allele_rangeSEXP);
+    __result = Rcpp::wrap(rcpp_calculate_haplotype_probabilities_sum_CLASS_Cache(fits, allele_range));
+    return __result;
+END_RCPP
+}
+// rcpp_calculate_haplotype_probabilities_sum_binomial
+List rcpp_calculate_haplotype_probabilities_sum_binomial(List dbs);
+RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_sum_binomial(SEXP dbsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type dbs(dbsSEXP);
+    __result = Rcpp::wrap(rcpp_calculate_haplotype_probabilities_sum_binomial(dbs));
+    return __result;
+END_RCPP
+}
+// rcpp_calculate_haplotype_probabilities_sum_binomial_compact_dbs
+List rcpp_calculate_haplotype_probabilities_sum_binomial_compact_dbs(List compact_dbs, List counts);
+RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_sum_binomial_compact_dbs(SEXP compact_dbsSEXP, SEXP countsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type compact_dbs(compact_dbsSEXP);
+    Rcpp::traits::input_parameter< List >::type counts(countsSEXP);
+    __result = Rcpp::wrap(rcpp_calculate_haplotype_probabilities_sum_binomial_compact_dbs(compact_dbs, counts));
+    return __result;
+END_RCPP
+}
+// rcpp_hapsums_disclap_normalised
+List rcpp_hapsums_disclap_normalised(List fits, IntegerMatrix haplotypes);
+RcppExport SEXP disclapmix_rcpp_hapsums_disclap_normalised(SEXP fitsSEXP, SEXP haplotypesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< List >::type fits(fitsSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type haplotypes(haplotypesSEXP);
+    __result = Rcpp::wrap(rcpp_hapsums_disclap_normalised(fits, haplotypes));
+    return __result;
 END_RCPP
 }
 // rcpp_calculate_haplotype_probabilities_sum
 NumericVector rcpp_calculate_haplotype_probabilities_sum(IntegerMatrix allele_range, IntegerMatrix y, NumericMatrix p, NumericVector tau);
 RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_sum(SEXP allele_rangeSEXP, SEXP ySEXP, SEXP pSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< IntegerMatrix >::type allele_range(allele_rangeSEXP );
-        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
-        NumericVector __result = rcpp_calculate_haplotype_probabilities_sum(allele_range, y, p, tau);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type allele_range(allele_rangeSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP);
+    __result = Rcpp::wrap(rcpp_calculate_haplotype_probabilities_sum(allele_range, y, p, tau));
+    return __result;
+END_RCPP
+}
+// rcpp_calculate_haplotype_probabilities_sum_between
+NumericVector rcpp_calculate_haplotype_probabilities_sum_between(IntegerMatrix allele_range, IntegerMatrix y1, IntegerMatrix y2, NumericMatrix p1, NumericMatrix p2, NumericVector tau1, NumericVector tau2);
+RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_sum_between(SEXP allele_rangeSEXP, SEXP y1SEXP, SEXP y2SEXP, SEXP p1SEXP, SEXP p2SEXP, SEXP tau1SEXP, SEXP tau2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type allele_range(allele_rangeSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type y1(y1SEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type y2(y2SEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type p1(p1SEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type p2(p2SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tau1(tau1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tau2(tau2SEXP);
+    __result = Rcpp::wrap(rcpp_calculate_haplotype_probabilities_sum_between(allele_range, y1, y2, p1, p2, tau1, tau2));
+    return __result;
 END_RCPP
 }
 // rcpp_match_quantities
 NumericVector rcpp_match_quantities(IntegerMatrix allele_range, IntegerMatrix y, NumericMatrix p, NumericVector tau);
 RcppExport SEXP disclapmix_rcpp_match_quantities(SEXP allele_rangeSEXP, SEXP ySEXP, SEXP pSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< IntegerMatrix >::type allele_range(allele_rangeSEXP );
-        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
-        NumericVector __result = rcpp_match_quantities(allele_range, y, p, tau);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type allele_range(allele_rangeSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP);
+    __result = Rcpp::wrap(rcpp_match_quantities(allele_range, y, p, tau));
+    return __result;
 END_RCPP
 }
 // rcpp_create_design_matrix
 IntegerMatrix rcpp_create_design_matrix(IntegerMatrix x, int clusters);
 RcppExport SEXP disclapmix_rcpp_create_design_matrix(SEXP xSEXP, SEXP clustersSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP );
-        Rcpp::traits::input_parameter< int >::type clusters(clustersSEXP );
-        IntegerMatrix __result = rcpp_create_design_matrix(x, clusters);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type clusters(clustersSEXP);
+    __result = Rcpp::wrap(rcpp_create_design_matrix(x, clusters));
+    return __result;
 END_RCPP
 }
 // rcpp_create_new_weight_vector
 NumericVector rcpp_create_new_weight_vector(NumericMatrix vic, int loci);
 RcppExport SEXP disclapmix_rcpp_create_new_weight_vector(SEXP vicSEXP, SEXP lociSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type vic(vicSEXP );
-        Rcpp::traits::input_parameter< int >::type loci(lociSEXP );
-        NumericVector __result = rcpp_create_new_weight_vector(vic, loci);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type vic(vicSEXP);
+    Rcpp::traits::input_parameter< int >::type loci(lociSEXP);
+    __result = Rcpp::wrap(rcpp_create_new_weight_vector(vic, loci));
+    return __result;
 END_RCPP
 }
 // rcpp_create_response_vector
 IntegerVector rcpp_create_response_vector(IntegerMatrix x, IntegerMatrix y);
 RcppExport SEXP disclapmix_rcpp_create_response_vector(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP );
-        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
-        IntegerVector __result = rcpp_create_response_vector(x, y);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP);
+    __result = Rcpp::wrap(rcpp_create_response_vector(x, y));
+    return __result;
 END_RCPP
 }
 // rcpp_calculate_wic
 NumericMatrix rcpp_calculate_wic(IntegerMatrix x, IntegerMatrix y, NumericMatrix p, NumericVector tau);
 RcppExport SEXP disclapmix_rcpp_calculate_wic(SEXP xSEXP, SEXP ySEXP, SEXP pSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP );
-        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
-        NumericMatrix __result = rcpp_calculate_wic(x, y, p, tau);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP);
+    __result = Rcpp::wrap(rcpp_calculate_wic(x, y, p, tau));
+    return __result;
 END_RCPP
 }
 // rcpp_calculate_vic
 NumericMatrix rcpp_calculate_vic(NumericMatrix wic);
 RcppExport SEXP disclapmix_rcpp_calculate_vic(SEXP wicSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type wic(wicSEXP );
-        NumericMatrix __result = rcpp_calculate_vic(wic);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type wic(wicSEXP);
+    __result = Rcpp::wrap(rcpp_calculate_vic(wic));
+    return __result;
 END_RCPP
 }
 // rcpp_calculate_haplotype_probabilities
 NumericVector rcpp_calculate_haplotype_probabilities(IntegerMatrix new_data, IntegerMatrix y, NumericMatrix p, NumericVector tau);
 RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities(SEXP new_dataSEXP, SEXP ySEXP, SEXP pSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< IntegerMatrix >::type new_data(new_dataSEXP );
-        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
-        NumericVector __result = rcpp_calculate_haplotype_probabilities(new_data, y, p, tau);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type new_data(new_dataSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP);
+    __result = Rcpp::wrap(rcpp_calculate_haplotype_probabilities(new_data, y, p, tau));
+    return __result;
 END_RCPP
 }
-// rcpp_calculate_haplotype_probabilities_increase_at_alleles
-NumericVector rcpp_calculate_haplotype_probabilities_increase_at_alleles(IntegerMatrix new_data, IntegerMatrix y, NumericMatrix p, NumericVector tau, NumericVector constants, IntegerVector increase_at_alleles);
-RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_increase_at_alleles(SEXP new_dataSEXP, SEXP ySEXP, SEXP pSEXP, SEXP tauSEXP, SEXP constantsSEXP, SEXP increase_at_allelesSEXP) {
+// rcpp_calculate_haplotype_probabilities_clusterwise
+NumericMatrix rcpp_calculate_haplotype_probabilities_clusterwise(IntegerMatrix new_data, IntegerMatrix y, NumericMatrix p, NumericVector tau);
+RcppExport SEXP disclapmix_rcpp_calculate_haplotype_probabilities_clusterwise(SEXP new_dataSEXP, SEXP ySEXP, SEXP pSEXP, SEXP tauSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< IntegerMatrix >::type new_data(new_dataSEXP );
-        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type constants(constantsSEXP );
-        Rcpp::traits::input_parameter< IntegerVector >::type increase_at_alleles(increase_at_allelesSEXP );
-        NumericVector __result = rcpp_calculate_haplotype_probabilities_increase_at_alleles(new_data, y, p, tau, constants, increase_at_alleles);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< IntegerMatrix >::type new_data(new_dataSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type p(pSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tau(tauSEXP);
+    __result = Rcpp::wrap(rcpp_calculate_haplotype_probabilities_clusterwise(new_data, y, p, tau));
+    return __result;
 END_RCPP
 }
 // rcpp_simulate
 IntegerMatrix rcpp_simulate(int nsim, IntegerMatrix y, NumericVector tau_cumsum, NumericMatrix disclap_parameters);
 RcppExport SEXP disclapmix_rcpp_simulate(SEXP nsimSEXP, SEXP ySEXP, SEXP tau_cumsumSEXP, SEXP disclap_parametersSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< int >::type nsim(nsimSEXP );
-        Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP );
-        Rcpp::traits::input_parameter< NumericVector >::type tau_cumsum(tau_cumsumSEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type disclap_parameters(disclap_parametersSEXP );
-        IntegerMatrix __result = rcpp_simulate(nsim, y, tau_cumsum, disclap_parameters);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int >::type nsim(nsimSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type tau_cumsum(tau_cumsumSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type disclap_parameters(disclap_parametersSEXP);
+    __result = Rcpp::wrap(rcpp_simulate(nsim, y, tau_cumsum, disclap_parameters));
+    return __result;
 END_RCPP
 }
 // rcpp_find_haplotype_in_matrix
 int rcpp_find_haplotype_in_matrix(const IntegerMatrix subpop, const IntegerVector h);
 RcppExport SEXP disclapmix_rcpp_find_haplotype_in_matrix(SEXP subpopSEXP, SEXP hSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const IntegerMatrix >::type subpop(subpopSEXP );
-        Rcpp::traits::input_parameter< const IntegerVector >::type h(hSEXP );
-        int __result = rcpp_find_haplotype_in_matrix(subpop, h);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const IntegerMatrix >::type subpop(subpopSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector >::type h(hSEXP);
+    __result = Rcpp::wrap(rcpp_find_haplotype_in_matrix(subpop, h));
+    return __result;
 END_RCPP
 }

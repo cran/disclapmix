@@ -25,7 +25,7 @@
 \code{\link{print.disclapmixfit}}
 \code{\link{plot.disclapmixfit}}
 \code{\link{summary.disclapmixfit}}
-\code{\link{haplotype_diversity}}
+%\code{\link{haplotype_diversity}}
 \code{\link{clusterdist}}
 }
 \keyword{print}

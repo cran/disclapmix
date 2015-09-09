@@ -25,8 +25,32 @@ disclapglm_deviance <- function(y, mu, wt) {
     .Call('disclapmix_disclapglm_deviance', PACKAGE = 'disclapmix', y, mu, wt)
 }
 
+rcpp_calculate_haplotype_probabilities_sum_CLASS <- function(fits, allele_range) {
+    .Call('disclapmix_rcpp_calculate_haplotype_probabilities_sum_CLASS', PACKAGE = 'disclapmix', fits, allele_range)
+}
+
+rcpp_calculate_haplotype_probabilities_sum_CLASS_Cache <- function(fits, allele_range) {
+    .Call('disclapmix_rcpp_calculate_haplotype_probabilities_sum_CLASS_Cache', PACKAGE = 'disclapmix', fits, allele_range)
+}
+
+rcpp_calculate_haplotype_probabilities_sum_binomial <- function(dbs) {
+    .Call('disclapmix_rcpp_calculate_haplotype_probabilities_sum_binomial', PACKAGE = 'disclapmix', dbs)
+}
+
+rcpp_calculate_haplotype_probabilities_sum_binomial_compact_dbs <- function(compact_dbs, counts) {
+    .Call('disclapmix_rcpp_calculate_haplotype_probabilities_sum_binomial_compact_dbs', PACKAGE = 'disclapmix', compact_dbs, counts)
+}
+
+rcpp_hapsums_disclap_normalised <- function(fits, haplotypes) {
+    .Call('disclapmix_rcpp_hapsums_disclap_normalised', PACKAGE = 'disclapmix', fits, haplotypes)
+}
+
 rcpp_calculate_haplotype_probabilities_sum <- function(allele_range, y, p, tau) {
     .Call('disclapmix_rcpp_calculate_haplotype_probabilities_sum', PACKAGE = 'disclapmix', allele_range, y, p, tau)
+}
+
+rcpp_calculate_haplotype_probabilities_sum_between <- function(allele_range, y1, y2, p1, p2, tau1, tau2) {
+    .Call('disclapmix_rcpp_calculate_haplotype_probabilities_sum_between', PACKAGE = 'disclapmix', allele_range, y1, y2, p1, p2, tau1, tau2)
 }
 
 rcpp_match_quantities <- function(allele_range, y, p, tau) {
@@ -57,8 +81,8 @@ rcpp_calculate_haplotype_probabilities <- function(new_data, y, p, tau) {
     .Call('disclapmix_rcpp_calculate_haplotype_probabilities', PACKAGE = 'disclapmix', new_data, y, p, tau)
 }
 
-rcpp_calculate_haplotype_probabilities_increase_at_alleles <- function(new_data, y, p, tau, constants, increase_at_alleles) {
-    .Call('disclapmix_rcpp_calculate_haplotype_probabilities_increase_at_alleles', PACKAGE = 'disclapmix', new_data, y, p, tau, constants, increase_at_alleles)
+rcpp_calculate_haplotype_probabilities_clusterwise <- function(new_data, y, p, tau) {
+    .Call('disclapmix_rcpp_calculate_haplotype_probabilities_clusterwise', PACKAGE = 'disclapmix', new_data, y, p, tau)
 }
 
 rcpp_simulate <- function(nsim, y, tau_cumsum, disclap_parameters) {

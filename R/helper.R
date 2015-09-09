@@ -191,18 +191,19 @@ function(object, newdata, ...) {
   return(probs)
 }
 
-predict_increase_at_alleles <-
-function(object, newdata, constants, increase_at_alleles, ...) {
-  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
-  if (any(constants < 0)) stop("constants must be >= 0")
-  if (length(constants) == 1L) constants <- rep(constants, length(object$tau))
-  if (length(constants) != length(object$tau)) stop("constants must have length 1 or number of clusters")
-  if (!is.vector(increase_at_alleles) || !is.integer(increase_at_alleles) || length(increase_at_alleles) != ncol(object$y)) stop("increase_at_alleles must be an integer vector with length corresponding to number of loci")
-  #dbsize <- object$model_observations / ncol(object$y)
-  #constants <- dbsize * object$tau
-  probs <- rcpp_calculate_haplotype_probabilities_increase_at_alleles(newdata, object$y, object$disclap_parameters, object$tau, constants, increase_at_alleles) 
-  return(probs)
-}
+
+#predict_increase_at_alleles <-
+#function(object, newdata, constants, increase_at_alleles, ...) {
+#  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
+#  if (any(constants < 0)) stop("constants must be >= 0")
+#  if (length(constants) == 1L) constants <- rep(constants, length(object$tau))
+#  if (length(constants) != length(object$tau)) stop("constants must have length 1 or number of clusters")
+#  if (!is.vector(increase_at_alleles) || !is.integer(increase_at_alleles) || length(increase_at_alleles) != ncol(object$y)) stop("increase_at_alleles must be an integer vector with length corresponding to number of loci")
+#  #dbsize <- object$model_observations / ncol(object$y)
+#  #constants <- dbsize * object$tau
+#  probs <- rcpp_calculate_haplotype_probabilities_increase_at_alleles(newdata, object$y, object$disclap_parameters, object$tau, constants, increase_at_alleles) 
+#  return(probs)
+#}
 
 #predictNEW <-
 #function(object, newdata, ...) {
@@ -346,7 +347,7 @@ function(x, which = 1L, clusdist = clusterdist(x), ...) {
   
     #clusdist <- clusterdist(object)
 
-    hcdata <- ggdendro::dendro_data.hclust(hc_reordered, type = "rectangle")
+    hcdata <- ggdendro::dendro_data(hc_reordered, type = "rectangle")
 
     hcdata$labels$label <- ''
     p_dendo <- ggdendro::ggdendrogram(hcdata, rotate = TRUE, leaf_labels = FALSE)
@@ -377,30 +378,6 @@ simulate.disclapmixfit <- function(object, nsim = 1L, seed = NULL, ...) {
   res <- rcpp_simulate(nsim, object$y, tau_cumsum, object$disclap_parameters)
 
   return(res)
-}
-
-haplotype_diversity <- function(object, nsim = 1e4L) {
-  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
-  
-  if (is.null(nsim) || length(nsim) != 1L || !is.integer(nsim) || nsim <= 0L) {
-    stop("nsim must be >= 1L (note the L postfix for integer)")
-  }
-  
-  get_db_counts <- function(x) { 
-    order_x <- do.call(order, as.data.frame(x))
-    equal.to.previous <- rowSums(x[tail(order_x, -1),] != x[head(order_x, -1),]) == 0
-    indices <- split(order_x, cumsum(c(TRUE, !equal.to.previous)))
-    Ns <- unlist(lapply(indices, length))
-    return(Ns)
-  }
-  
-  db <- simulate.disclapmixfit(object, nsim = nsim)
-  Ns <- get_db_counts(db)
-  freqs <- Ns / nsim
-  #D <- 1 - sum(freqs^2)
-  D <- (nsim / (nsim - 1)) * (1 - sum(freqs^2))
-  
-  return(D)
 }
 
 INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, apriori_probs, weight_vector, vmat, 
@@ -583,97 +560,5 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
   )
 
   return(ans)
-}
-
-happrobsum <- function(object, alleles, ...) {
-  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
-  if (ncol(alleles) != ncol(object$y)) stop("Please specify alleles for exactly the number of loci the model was fitted for")
-  prob_sum <- rcpp_calculate_haplotype_probabilities_sum(alleles, object$y, object$disclap_parameters, object$tau)
-  return(prob_sum)
-}
-
-#match_prob_quantities <- function(object, alleles, ...) {
-#  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
-#  if (ncol(alleles) != ncol(object$y)) stop("Please specify alleles for exactly the number of loci the model was fitted for")
-#  ms <- rcpp_match_quantities(alleles, object$y, object$disclap_parameters, object$tau)
-#  return(ms)
-#}
-
-#  * New function to calculate theta
-#estimate_theta <- function(object, alleles, ...) {
-#  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
-#  if (ncol(alleles) != ncol(object$y)) stop("Please specify alleles for exactly the number of loci the model was fitted for")
-#  if (nrow(object$y) <= 1L) stop("Need a fit with at least two (2) clusters")
-#  
-##  #prob_sums <- happrobsum(object, alleles)
-#  ms <- match_prob_quantities(object, alleles)
-#
-#  mis <- unlist(lapply(1L:nrow(object$y), function(j) {
-#    rcpp_calculate_haplotype_probabilities_sum(alleles, 
-#      object$y[j, , drop = FALSE], object$disclap_parameters[j, , drop = FALSE], 1)[2]
-#  }))
-#  
-#  mW <- mean(mis)
-#  mA <- mean(ms[upper.tri(ms)])
-#  betaW <- (mW - mA) / (1 - mA)
-#  
-#  return(betaW)
-##  #Mw <- betaW + (1-betaW)*as.numeric(prob_sums[2L])
-##  #theta <- (Mw - prob_sums[2L]) / (1 - prob_sums[2L])
-##
-##  #return(list(theta = betaW, prob_sums = prob_sums))
-##
-##  #return(list(theta = theta, prob_sums = prob_sums))
-##}
-
-#  * New helper function: convert_to_compact_db
-convert_to_compact_db <- function(x) { 
-  #if (!is.matrix(x) || !is.data.frame(x)) {
-  #  stop("x must be a matrix or data.frame")
-  #}
-
-  if (nrow(x) <= 1L) {
-    ret <- data.frame(x, Ndb = 1L)
-    ret$ind <- list("1" = 1L)
-    return(ret)
-  }
-
-  #if (is.matrix(x) && (dim(x)[2L] == 1L)) {
-  #  x <- as.vector(x) 
-  #}
- 
-  x_ord <- do.call(order, as.data.frame(x))
-   
-  #if (is.vector(x)) {
-  #  same_as_previous <- x[tail(x_ord, -1L)] == x[head(x_ord, -1L)]
-  #} else {
-    same_as_previous <- rowSums(x[tail(x_ord, -1L), , drop = FALSE] != x[head(x_ord, -1L), , drop = FALSE]) == 0L
-  #}	
- 
-  indices <- split(x_ord, cumsum(c(TRUE, !same_as_previous)))
- 
-  #if (is.vector(x)) {
-  #  x <- x[sapply(indices, function (x) x[[1L]]), drop = FALSE]
-  #} else {
-    x <- x[sapply(indices, function (x) x[[1L]]), , drop = FALSE]
-  #}
-  
-  return(data.frame(x, Ndb = sapply (indices, length), ind = I(indices)))
-}
-
-#  * New helper function: find_haplotype_in_matrix
-find_haplotype_in_matrix <- function(mat, haplotype) {
-  if (!is.matrix(mat) || !is.integer(mat) || !is.integer(haplotype)) {
-    stop("mat must be an integer matrix and haplotype an integer vector")
-  }
-  if (length(haplotype) != ncol(mat)) stop("Wrong dimensions")
-
-  i <- rcpp_find_haplotype_in_matrix(mat, haplotype)
-
-  if (i <= 0L) {
-    i <- NULL
-  }
-
-  return(i)
 }
 

@@ -43,7 +43,7 @@ Mikkel Meyer Andersen <mikl@math.aau.dk> and Poul Svante Eriksen
 \code{\link{print.disclapmixfit}}
 \code{\link{summary.disclapmixfit}}
 \code{\link{simulate.disclapmixfit}}
-\code{\link{haplotype_diversity}}
+%\code{\link{haplotype_diversity}}
 \code{\link{clusterdist}}
 \code{\link{clusterprob}}
 \code{\link{glm.fit}}

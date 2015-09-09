@@ -19,7 +19,7 @@
 \code{\link{predict.disclapmixfit}}
 \code{\link{print.disclapmixfit}}
 \code{\link{simulate.disclapmixfit}}
-\code{\link{haplotype_diversity}}
+%\code{\link{haplotype_diversity}}
 \code{\link{clusterdist}}
 }
 \keyword{print}
