@@ -1,5 +1,28 @@
+#' Calculate distance between clusters
+#' 
+#' \code{clusterdist} calculates the distance between each pair of clusters.
+#' The distance measure is based on a symmetric Kullback-Leibler divergence.
+#' 
+#' 
+#' @param fit A \code{\link{disclapmixfit}} object.
+#' @param ... Not used
+#' @return A distance matrix
+#' @seealso \code{\link{disclapmix-package}} \code{\link{disclapmix}}
+#' \code{\link{disclapmixfit}} \code{\link{clusterprob}}
+#' \code{\link{predict.disclapmixfit}} \code{\link{print.disclapmixfit}}
+#' \code{\link{summary.disclapmixfit}} \code{\link{simulate.disclapmixfit}}
+#' %\code{\link{haplotype_diversity}}
+#' \code{\link[disclap:disclap-package]{disclap}}
+#' @keywords distance clusters
+#' @export
 clusterdist <- function(fit, ...) {
-  if (!is(fit, "disclapmixfit")) stop("fit must be a disclapmixfit")
+  if (!is(fit, "disclapmixfit")) {
+    stop("fit must be a disclapmixfit")
+  }
+  
+  if (nrow(fit$y) < 2L) {
+    stop("Fit must have at least two clusters") 
+  }
   
   symDist <- function(p1, z1, p2, z2) {
       KL <- function(p1, p2, m) {

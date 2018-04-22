@@ -1,3 +1,132 @@
+#' Discrete Laplace mixture inference using the EM algorithm
+#' 
+#' \code{disclapmix} makes inference in a mixture of Discrete Laplace
+#' distributions using the EM algorithm. After the EM algorithm has converged,
+#' the centers are moved if the marginal likelihood increases by doing so. And
+#' then the EM algorithm is run again. This continues until the centers are not
+#' moved.
+#' 
+#' \code{glm_method}: \code{internal_coef} is the fastest as it uses the
+#' relative changes in the coefficients as a stopping criterium, hence it does
+#' not need to compute the deviance until the very end. In normal situations,
+#' it would not be a problem to use this method. \code{internal_dev} is the
+#' reasonably fast method that uses the deviance as a stopping criterium (like
+#' \code{glm.fit}). \code{glm.fit} to use the traditional \code{glm.fit} IWLS
+#' implementation and is slow compared to the other two methods.
+#' 
+#' \code{init_y_method}: For \code{init_y_method = 'clara'}, the sampling
+#' parameters are: \code{samples = 100}, \code{sampsize =
+#' min(ceiling(nrow(x)/2), 100 + 2*clusters)} and the random number generator
+#' in R is used.
+#' 
+#' @aliases disclapmixfit
+#' 
+#' @param x Dataset.
+#' @param clusters The number of clusters/components to fit the model for.
+#' @param init_y Initial central haplotypes, if NULL, these will be estimated
+#' as described under the \code{init_y_method} argument.
+#' @param iterations Maximum number of iterations in the EM-algorithm.
+#' @param eps Convergence stop criteria in the EM algorithm which is compared
+#' to \eqn{\frac{\max \{ v_{new} - v_{old} \}}{\max \{ v_{old} \}}}{| max
+#' (v\_new - v\_old) | / max(v\_old)}, where \code{v} is a matrix of each
+#' observation's probability of belonging to a certain center.
+#' @param verbose from 0 to 2 (both including): 0 for silent, 2 for extra
+#' verbose.
+#' @param glm_method \code{internal_coef}, \code{internal_dev} or
+#' \code{glm.fit}. Please see details.
+#' @param glm_control_maxit Integer giving the maximal number of IWLS
+#' iterations.
+#' @param glm_control_eps Positive convergence tolerance epsilon; the
+#' iterations converge when \code{|x - x_{old}|/(|x| + 0.1) < epsilon}, where
+#' \code{x = beta_correction} for \code{internal_coef} and \code{x = deviance}
+#' otherwise.
+#' @param init_y_method Which cluster method to use for finding initial central
+#' haplotypes, y: \code{pam} (recommended) or \code{clara}. Ignored if
+#' \code{init_y} is supplied.
+#' @param ... Used to detect obsolete usage (when using parameters
+#' \code{centers}, \code{use.parallel}, \code{calculate.logLs} or
+#' \code{plots.prefix}).
+#' @return A \code{\link{disclapmixfit}} object: \describe{
+#' \item{list("glm_method")}{The supplied GLM method.}
+#' \item{list("init_y")}{The supplied initial central haplotypes,
+#' \code{init_y}.} 
+#' \item{list("init_y_method")}{The supplied method for
+#' choosing initial central haplotypes (only used if \code{init_y} is
+#' \code{NULL}).}
+#' \item{list("converged")}{Whether the estimation converged or not.}
+#' \item{list("x")}{Dataset used to fit the model.} \item{list("y")}{The
+#' central haplotypes, \code{y}.} \item{list("tau")}{The prior probabilities of
+#' belonging to a cluster, \code{tau}.} \item{list("v_matrix")}{The matrix
+#' \code{v} of each observation's probability of belonging to a certain
+#' cluster. The rows are in the same order as the observations in \code{x} used
+#' to generate this fit.} \item{list("disclap_parameters")}{A matrix with the
+#' estimated dicrete Laplace parameters.} \item{list("glm_coef")}{The
+#' coefficients from the last GLM fit (used to calculate
+#' \code{disclap_parameters}).}
+#' \item{list("model_observations")}{Number of observations.}
+#' \item{list("model_parameters")}{Number of parameters in the model.}
+#' \item{list("iterations")}{Number of iterations performed in total (including
+#' moving centers and re-estimating using the EM algorithm).}
+#' \item{list("logL_full")}{Full log likelihood of the final model.}
+#' \item{list("logL_marginal")}{Marginal log likelihood of the final model.}
+#' \item{list("BIC_full")}{BIC based on the full log likelihood of the final
+#' model.} 
+#' \item{list("BIC_marginal")}{BIC based on the marginal log likelihood
+#' of the final model.}
+#' \item{list("v_gain_iterations")}{The gain \eqn{\frac{\max \{ v_{new} -
+#' v_{old} \}}{\max \{ v_{old} \}}}{| max (v\_new - v\_old) | / max(v\_old)},
+#' where \code{v} is \code{vic_matrix} mentioned above, during the iterations.}
+#' \item{list("tau_iterations")}{The prior probability of belonging to the
+#' centers during the iterations.}
+# \item{\code{changed_center}}{A vector with the iteration numbers where the
+# centers have changed.} \item{list("centers_iterations")}{The centers before
+# the changes in \code{changed_center}.}
+#' \item{list("logL_full_iterations")}{Full log likelihood of the models during
+#' the iterations (only calculated when \code{verbose = 2L}).}
+#' \item{list("logL_marginal_iterations")}{Marginal log likelihood of the
+#' models during the iterations (only calculated when \code{verbose = 2L}).}
+#' \item{list("BIC_full_iterations")}{BIC based on full log likelihood of the
+#' models during the iterations (only calculated when \code{verbose = 2L}).}
+#' \item{list("BIC_marginal_iterations")}{BIC based on marginal log likelihood
+#' of the models during the iterations (only calculated when \code{verbose =
+#' 2L}).} }
+#' @seealso \code{\link{disclapmix-package}} \code{\link{disclapmix}}
+#' \code{\link{disclapmixfit}} \code{\link{predict.disclapmixfit}}
+#' \code{\link{print.disclapmixfit}} \code{\link{summary.disclapmixfit}}
+#' \code{\link{simulate.disclapmixfit}} %\code{\link{haplotype_diversity}}
+#' \code{\link{clusterdist}} \code{\link{clusterprob}} \code{\link{glm.fit}}
+#' \code{\link[disclap]{disclap}} \code{\link[cluster]{pam}}
+#' \code{\link[cluster]{clara}}
+#' @keywords disclapmix clusters eps
+#' @examples
+#' 
+#' # Generate sample database
+#' db <- matrix(disclap::rdisclap(1000, 0.3), nrow = 250, ncol = 4)
+#' 
+#' # Add location parameters
+#' db <- sapply(1:ncol(db), function(i) as.integer(db[, i]+13+i))
+#' 
+#' head(db)
+#' 
+#' fit1 <- disclapmix(db, clusters = 1L, verbose = 1L, glm_method = "glm.fit")
+#' fit1$disclap_parameters
+#' fit1$y
+#' 
+#' fit1b <- disclapmix(db, clusters = 1L, verbose = 1L, glm_method = "internal_coef")
+#' fit1b$disclap_parameters
+#' fit1b$y
+#' 
+#' max(abs(fit1$disclap_parameters - fit1b$disclap_parameters))
+#' 
+#' # Generate another type of database
+#' db2 <- matrix(disclap::rdisclap(2000, 0.1), nrow = 500, ncol = 4)
+#' db2 <- sapply(1:ncol(db2), function(i) as.integer(db2[, i]+14+i))
+#' fit2 <- disclapmix(rbind(db, db2), clusters = 2L, verbose = 1L)
+#' fit2$disclap_parameters
+#' fit2$y
+#' fit2$tau
+#' 
+#' @export
 disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.001, verbose = 0L, 
   glm_method = "internal_coef", glm_control_maxit = 50L, glm_control_eps = 1e-6, init_y_method = "pam", ...) {
   
@@ -182,6 +311,8 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
   BIC_full_iterations <- NULL
   BIC_marginal_iterations <- NULL
   
+  covmat <- NULL
+  
   v_gain_iterations <- NULL
   tau_iterations <- tau_vector
   changed_center <- NULL
@@ -199,6 +330,10 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
     # necessary (the weights are all 1 and no reestimation is needed)
     iterations <- 1L
     converged <- TRUE
+  }
+  
+  if (is.null(colnames(x))) {
+    colnames(x) <- paste0("locus", 1L:ncol(x))
   }
   
   repeat {   
@@ -234,24 +369,38 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
           start = beta_start,
           control = glm.control(trace = (verbose >= 2L), epsilon = glm_control_eps, maxit = glm_control_maxit))
         disclap_parameters <- convert_coef_to_disclap_parameters(fit$coefficients, clusters)
+        
+        covmat <- solve(t(model_matrix) %*% diag(fit$weights) %*% model_matrix) # assumens dispersion is 1 # Intercept is missing
+        #covmat <- chol2inv(fit$qr$qr) 
+        covmat_nms <- c(paste0("cluster", 1L:clusters), colnames(x)[-1L])
+        #colnames(covmat) <- rownames(covmat) <- covmat_nms
       } else if (glm_method == "internal_dev") {
         fit <- INTERNAL_glmfit(loci = ncol(x), clusters = clusters, individuals = nrow(x), 
           response_vector = response_vector, apriori_probs = tau_vector, weight_vector = weight_vector, vmat = vic_matrix, 
           verbose = (verbose >= 2L), stop_by_deviance = TRUE, epsilon = glm_control_eps, maxit = glm_control_maxit) 
         disclap_parameters <- convert_coef_to_disclap_parameters_internal(fit$coefficients, clusters)
         colnames(disclap_parameters) <- colnames(x)
+        
+        covmat <- fit$P # assumens dispersion is 1        
+        covmat_nms <- c(colnames(x), paste0("cluster", 1L:clusters))
+        colnames(covmat) <- rownames(covmat) <- covmat_nms
+
       } else if (glm_method == "internal_coef") {
         fit <- INTERNAL_glmfit(loci = ncol(x), clusters = clusters, individuals = nrow(x), 
           response_vector = response_vector, apriori_probs = tau_vector, weight_vector = weight_vector, vmat = vic_matrix, 
           verbose = (verbose >= 2L), stop_by_deviance = FALSE, epsilon = glm_control_eps, maxit = glm_control_maxit) 
         disclap_parameters <- convert_coef_to_disclap_parameters_internal(fit$coefficients, clusters)
         colnames(disclap_parameters) <- colnames(x)
+
+        covmat <- fit$P # assumens dispersion is 1
+        covmat_nms <- c(colnames(x), paste0("cluster", 1L:clusters))
+        colnames(covmat) <- rownames(covmat) <- covmat_nms
       } else {
         stop("Unsupported glm_method chosen")
       }
       
-      rownames(disclap_parameters) <- paste("cluster", 1L:clusters, sep = "")    
-      
+      rownames(disclap_parameters) <- paste0("cluster", 1L:clusters)
+
       #print(fit$coefficients)
       #print(disclap_parameters)
 
@@ -356,6 +505,11 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
         cat(as.character(Sys.time()), ": Central haplotypes, y, were optimal, no need to more EM iterations.\n", sep = "")
       }
       break
+    } else if (any(duplicated(new_y))) { # new case introduced in version 1.6.3
+      if (verbose >= 1L) {
+        cat(as.character(Sys.time()), ": New central haplotypes had at least two haplotype being equal, did not change centers.\n", sep = "")
+      }
+      break
     } else {
       if (verbose >= 2L) {      
         cat(as.character(Sys.time()), ": Current central haplotypes, y, not optimal:\n", sep = "")
@@ -416,12 +570,15 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
     #fit = fit,
 
     converged = converged,
-        
+    x = x,
+
     y = y,
     tau = tau_vector,
     v_matrix = vic_matrix,
     disclap_parameters = disclap_parameters,
     glm_coef = fit$coefficients,
+    
+    covmat = covmat,
     
     model_observations = prod(dim(x)),
     model_parameters = ((clusters * ncol(x)) + (ncol(x) + clusters - 1) + (clusters - 1)),

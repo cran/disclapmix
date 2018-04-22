@@ -116,9 +116,9 @@ move_centers <- function(x, y, v_matrix) {
     })
     
     if (nrow(y) == 1L) {
-       indices <- which.min(res)
+      indices <- which.min(res)
     } else {
-       indices <- apply(res, 1L, which.min)
+      indices <- apply(res, 1L, which.min)
     }
 
     return(ycls[indices])
@@ -184,11 +184,36 @@ get_BIC <- function(logL, individuals, clusters, loci) {
   return(log(individuals*loci)*k - 2*logL)
 }
 
+
+
+#' Predict from a disclapmixfit
+#' 
+#' Is able to predict haplotype frequencies using a \code{\link{disclapmixfit}}
+#' object.
+#' 
+#' 
+#' @param object a \code{\link{disclapmixfit}} object
+#' @param newdata the haplotypes in matrix format to estimate haplotype
+#' probabilities for
+#' @param ... not used
+#' @seealso \code{\link{disclapmix}} \code{\link{disclapmixfit}}
+#' \code{\link{print.disclapmixfit}} \code{\link{summary.disclapmixfit}}
+#' \code{\link{simulate.disclapmixfit}} \code{\link{plot.disclapmixfit}}
+#' %\code{\link{haplotype_diversity}} \code{\link{clusterdist}}
+#' \code{\link{clusterprob}}
+#' @keywords predict
+#' @export
 predict.disclapmixfit <-
 function(object, newdata, ...) {
   if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
+
   probs <- rcpp_calculate_haplotype_probabilities(newdata, object$y, object$disclap_parameters, object$tau)
   return(probs)
+  
+  #if (se.fit && !(object$glm_method %in% c("internal_coef", "internal_dev"))) {
+  #  stop("Cannot predict se when fitting with other than internal_coef or internal_dev")
+  #}
+  #return(NA)
 }
 
 
@@ -212,6 +237,22 @@ function(object, newdata, ...) {
 #  return(probs)
 #}
 
+
+
+#' Print a disclapmixfit
+#' 
+#' Prints a \code{\link{disclapmixfit}} object.
+#' 
+#' 
+#' @param x a \code{\link{disclapmixfit}} object, usually from a result of a
+#' call to \code{disclapmix}.
+#' @param ... not used
+#' @seealso \code{\link{disclapmix}} \code{\link{disclapmixfit}}
+#' \code{\link{predict.disclapmixfit}} \code{\link{summary.disclapmixfit}}
+#' \code{\link{simulate.disclapmixfit}} \code{\link{plot.disclapmixfit}}
+#' %\code{\link{haplotype_diversity}} \code{\link{clusterdist}}
+#' @keywords print
+#' @export
 print.disclapmixfit <-
 function(x, ...) {
   if (!is(x, "disclapmixfit")) stop("x must be a disclapmixfit")
@@ -224,6 +265,22 @@ function(x, ...) {
   return(invisible(x))
 }
 
+
+
+#' Summary of a disclapmixfit
+#' 
+#' Summary of a \code{\link{disclapmixfit}} object.
+#' 
+#' 
+#' @param object a \code{\link{disclapmixfit}} object, usually from a result of
+#' a call to \code{disclapmix}.
+#' @param ... not used
+#' @seealso \code{\link{disclapmix}} \code{\link{disclapmixfit}}
+#' \code{\link{predict.disclapmixfit}} \code{\link{print.disclapmixfit}}
+#' \code{\link{simulate.disclapmixfit}} %\code{\link{haplotype_diversity}}
+#' \code{\link{clusterdist}}
+#' @keywords print
+#' @export
 summary.disclapmixfit <-
 function(object, ...) {
   if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
@@ -247,6 +304,34 @@ function(object, ...) {
 }
 
 
+
+
+#' Plot a disclapmixfit
+#' 
+#' Plot a \code{\link{disclapmixfit}} object.
+#' 
+#' 
+#' @param x a \code{\link{disclapmixfit}} object, usually from a result of a
+#' call to \code{disclapmix}.
+#' @param which What plot to make. 1L = clusters and their distances.
+#' @param clusdist To use previously computed cluster distances to avoid doing
+#' the same computations twice.
+#' @param ... not used
+#' @return A data frame with discrete Laplace distributions for each cluster
+#' and locus. Side effect: A plot.
+#' @seealso \code{\link{disclapmix}} \code{\link{disclapmixfit}}
+#' \code{\link{predict.disclapmixfit}} \code{\link{print.disclapmixfit}}
+#' \code{\link{simulate.disclapmixfit}} \code{\link{summary.disclapmixfit}}
+#' %\code{\link{haplotype_diversity}} \code{\link{clusterdist}}
+#' @keywords plot
+#' @examples
+#' 
+#' data(danes)
+#' db <- as.matrix(danes[rep(1:nrow(danes), danes$n), 1:(ncol(danes)-1)])
+#' fit <- disclapmix(db, clusters = 4L)
+#' plot(fit)
+#' 
+#' @export
 plot.disclapmixfit <-
 function(x, which = 1L, clusdist = clusterdist(x), ...) {
   if (!is(x, "disclapmixfit")) stop("x must be a disclapmixfit")
@@ -363,6 +448,25 @@ function(x, which = 1L, clusdist = clusterdist(x), ...) {
   return(invisible(prob_masses))
 }
 
+
+
+#' Simulate from a disclapmixfit
+#' 
+#' Simulate from a \code{\link{disclapmixfit}} object.
+#' 
+#' 
+#' @param object a \code{\link{disclapmixfit}} object, usually from a result of
+#' a call to \code{disclapmix}.
+#' @param nsim number of haplotypes to generate.
+#' @param seed not used
+#' @param ... not used
+#' @return A matrix where the rows correspond to the simulated haplotypes.
+#' @seealso \code{\link{disclapmix}} \code{\link{disclapmixfit}}
+#' \code{\link{predict.disclapmixfit}} \code{\link{print.disclapmixfit}}
+#' \code{\link{plot.disclapmixfit}} \code{\link{summary.disclapmixfit}}
+#' %\code{\link{haplotype_diversity}} \code{\link{clusterdist}}
+#' @keywords print
+#' @export
 simulate.disclapmixfit <- function(object, nsim = 1L, seed = NULL, ...) {
   if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
   
@@ -556,7 +660,8 @@ INTERNAL_glmfit <- function(loci, clusters, individuals, response_vector, aprior
     coefficients = coefficients,
     converged = converged,
     deviance = dev,
-    linear.predictors = lin.pred
+    linear.predictors = lin.pred,
+    P = mI
   )
 
   return(ans)

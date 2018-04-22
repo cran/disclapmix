@@ -5,161 +5,6 @@ function(object, newdata, ...) {
   return(probs)
 }
 
-happrobsum_within <- function(object, alleles, ...) {
-  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
-  if (ncol(alleles) != ncol(object$y)) stop("Please specify alleles for exactly the number of loci the model was fitted for")
-  prob_sum <- rcpp_calculate_haplotype_probabilities_sum(alleles, object$y, object$disclap_parameters, object$tau)
-  return(prob_sum)
-}
-
-happrobsum_within_between <- function(objects, alleles, ...) {
-  if (!is.list(objects) || length(objects) <= 1L) {
-    stop("Please specify at least two disclapmixfit fits")
-  }
-
-  for (o in objects) {
-    if (!is(o, "disclapmixfit")) stop("all objects must be a disclapmixfit")
-    if (ncol(alleles) != ncol(o$y)) stop("Please specify alleles for exactly the number of loci that all the objects was fitted for")
-  }
-
-  fits <- lapply(objects, function(o) {
-    return(list(y = o$y, p = o$disclap_parameters, tau = o$tau))
-  })
-
-  res <- rcpp_calculate_haplotype_probabilities_sum_CLASS(fits, alleles)
-
-  class(res) <- c("happrobsum_within_between", class(res))
-  
-  return(res)
-}
-
-happrobsum_within_between_cache <- function(objects, alleles, normalise = FALSE, ...) {
-  if (!is.list(objects) || length(objects) <= 1L) {
-    stop("Please specify at least two disclapmixfit fits")
-  }
-
-  for (o in objects) {
-    if (!is(o, "disclapmixfit")) stop("all objects must be a disclapmixfit")
-    if (ncol(alleles) != ncol(o$y)) stop("Please specify alleles for exactly the number of loci that all the objects was fitted for")
-  }
-
-  fits <- lapply(objects, function(o) {
-    return(list(y = o$y, p = o$disclap_parameters, tau = o$tau))
-  })
-
-  res <- rcpp_calculate_haplotype_probabilities_sum_CLASS_Cache(fits, alleles)
-  
-  class(res) <- c("happrobsum_within_between", class(res))
-
-  if (!is.null(normalise) && !is.na(normalise) && is.logical(normalise) && length(normalise) == 1L && normalise == TRUE) {
-    res <- happrobsum_normalise(res)
-  }
-  
-  return(res)
-}
-
-happrobsum_normalise <- function(hapsum, change_sums = TRUE, ...) {
-  if (!is(hapsum, "happrobsum_within_between")) stop("object must be a happrobsum_within_between")
-
-  hapsum$match_within <- hapsum$match_within / (hapsum$hap_sum * hapsum$hap_sum)
-  
-  n <- length(hapsum$match_within)
-  for (i1 in 1L:(n - 1L)) {
-    for (i2 in (i1 + 1L):n) {
-      hapsum$match_between[i1, i2] <- hapsum$match_between[i1, i2] / (hapsum$hap_sum[i1] * hapsum$hap_sum[i2])
-    }    
-  }
-  
-  if (!is.null(change_sums) && !is.na(change_sums) && is.logical(change_sums) && length(change_sums) == 1L && change_sums == TRUE) {
-    hapsum$hap_sum <- rep(1, length(hapsum$hap_sum))
-  }
-  
-  return(hapsum)    
-}
-
-happrobsum_within_between_binomial <- function(dbs, ...) {
-  if (length(dbs) <= 1L) {
-    stop("At least two databases are required")
-  }
-  
-  for (db in dbs) {
-    if (!is.matrix(db) | !is.integer(db)) {
-      stop("haplotypes must be an integer matrix")
-    }
-  }
-
-  loci <- ncol(dbs[[1L]])
-  
-  for (db in dbs) {
-    if (ncol(db) != loci) {
-      stop("All databases must have the same number of loci")
-    }
-  }
-  
-  res <- rcpp_calculate_haplotype_probabilities_sum_binomial(dbs)
-  class(res) <- c("happrobsum_within_between", class(res))  
-  return(res)
-}
-
-# Expect count column to be the last column
-happrobsum_within_between_binomial_compact_dbs <- function(compact_dbs, ...) {
-  if (length(compact_dbs) <= 1L) {
-    stop("At least two databases are required")
-  }
-  
-  for (db in compact_dbs) {
-    if (!is.matrix(db) | !is.integer(db)) {
-      stop("haplotypes must be an integer matrix")
-    }
-  }
-  
-  for (db in compact_dbs) {
-    if (ncol(db) != ncol(compact_dbs[[1L]])) {
-      stop("All databases must have the same number of loci")
-    }
-  }
-  
-  counts <- lapply(compact_dbs, function(db) as.integer(db[, ncol(db)]))
-  dbs <- lapply(compact_dbs, function(db) (db[, 1L:(ncol(db)-1L), drop = FALSE]))
-  
-  res <- rcpp_calculate_haplotype_probabilities_sum_binomial_compact_dbs(dbs, counts)
-  class(res) <- c("happrobsum_within_between", class(res))  
-  return(res)
-}
-
-# Normalises
-happrobsum_within_between_normalised <- function(objects, dbs_to_eval, ...) {
-  if (!is.list(objects) || length(objects) <= 1L) {
-    stop("Please specify at least two disclapmixfit fits")
-  }
-  
-  for (db in dbs_to_eval) {  
-    if (!is.matrix(db) | !is.integer(db)) {
-      stop("All db in dbs_to_eval must be an integer matrix")
-    }    
-  }
-  
-  loci <- ncol(dbs_to_eval[[1L]])
-
-  for (o in objects) {
-    if (!is(o, "disclapmixfit")) stop("all objects must be a disclapmixfit")
-    if (ncol(o$y) != loci) stop("Please specify dbs_to_eval for exactly the number of loci that all the objects was fitted for")
-  }
-
-  fits <- lapply(objects, function(o) {
-    return(list(y = o$y, p = o$disclap_parameters, tau = o$tau))
-  })
-
-  # FIXME: Faster? C++ hash?
-  db_unique <- do.call(rbind, dbs_to_eval)
-  db_unique <- db_unique[!duplicated(db_unique), ]
-
-  res <- rcpp_hapsums_disclap_normalised(fits, db_unique)
-
-  class(res) <- c("happrobsum_within_between", class(res))
-  
-  return(res)
-}
 
 theta_weir <- function(hapsum, ...) {
   if (!is(hapsum, "happrobsum_within_between")) stop("object must be a happrobsum_within_between")
@@ -171,46 +16,17 @@ theta_weir <- function(hapsum, ...) {
   mA <- mean(mij[upper.tri(mij)])
   
   r <- length(mi)
-  disclap_theta_approx <- (mW - mA) / (1 - mA)
-  disclap_theta <- (((r-1)/r) * disclap_theta_approx) / (1 - (1/r)*disclap_theta_approx)
+  
+  theta_approx <- (mW - mA) / (1 - mA)
+  theta <- (((r-1)/r) * theta_approx) / (1 - (1/r)*theta_approx)
+  
+  thetas_approx <- (mi - mA) / (1 - mA)
+  thetas <- (((r-1)/r) * thetas_approx) / (1 - (1/r)*thetas_approx)
   
   #return(weir_theta)
-  return(list(theta = disclap_theta, theta_approx = disclap_theta_approx))
+  return(list(theta = theta, theta_approx = theta_approx, thetas_subpops = thetas))
 }
 
-#match_prob_quantities <- function(object, alleles, ...) {
-#  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
-#  if (ncol(alleles) != ncol(object$y)) stop("Please specify alleles for exactly the number of loci the model was fitted for")
-#  ms <- rcpp_match_quantities(alleles, object$y, object$disclap_parameters, object$tau)
-#  return(ms)
-#}
-
-#  * New function to calculate theta
-#estimate_theta <- function(object, alleles, ...) {
-#  if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
-#  if (ncol(alleles) != ncol(object$y)) stop("Please specify alleles for exactly the number of loci the model was fitted for")
-#  if (nrow(object$y) <= 1L) stop("Need a fit with at least two (2) clusters")
-#  
-##  #prob_sums <- happrobsum(object, alleles)
-#  ms <- match_prob_quantities(object, alleles)
-#
-#  mis <- unlist(lapply(1L:nrow(object$y), function(j) {
-#    rcpp_calculate_haplotype_probabilities_sum(alleles, 
-#      object$y[j, , drop = FALSE], object$disclap_parameters[j, , drop = FALSE], 1)[2]
-#  }))
-#  
-#  mW <- mean(mis)
-#  mA <- mean(ms[upper.tri(ms)])
-#  betaW <- (mW - mA) / (1 - mA)
-#  
-#  return(betaW)
-##  #Mw <- betaW + (1-betaW)*as.numeric(prob_sums[2L])
-##  #theta <- (Mw - prob_sums[2L]) / (1 - prob_sums[2L])
-##
-##  #return(list(theta = betaW, prob_sums = prob_sums))
-##
-##  #return(list(theta = theta, prob_sums = prob_sums))
-##}
 
 #  * New helper function: convert_to_compact_db
 convert_to_compact_db <- function(x) { 
@@ -265,6 +81,25 @@ find_haplotype_in_matrix <- function(mat, haplotype) {
 
 
 
+
+
+#' Calculate haplotype diversity from a disclapmixfit
+#' 
+#' Calculate haplotype diversity from a \code{\link{disclapmixfit}} object. The
+#' method is based on simulating a huge database that approximates the
+#' population.
+#' 
+#' 
+#' @param object a \code{\link{disclapmixfit}} object, usually from a result of
+#' a call to \code{disclapmix}.
+#' @param nsim number of haplotypes to generate for calculating the haplotype
+#' diversity.
+#' @return The calculated haplotype diversity.
+#' @seealso \code{\link{disclapmix}} \code{\link{disclapmixfit}}
+#' \code{\link{predict.disclapmixfit}} \code{\link{print.disclapmixfit}}
+#' \code{\link{summary.disclapmixfit}} \code{\link{simulate.disclapmixfit}}
+#' %\code{\link{haplotype_diversity}} \code{\link{clusterdist}}
+#' @keywords print
 haplotype_diversity <- function(object, nsim = 1e4L) {
   if (!is(object, "disclapmixfit")) stop("object must be a disclapmixfit")
   
@@ -288,5 +123,95 @@ haplotype_diversity <- function(object, nsim = 1e4L) {
   
   return(D)
 }
+
+
+
+
+
+predict_with_variance <- function(fit, newdata, nsim = 1000L) {
+  stopifnot(nsim >= 1L) 
+  
+  #new_betas <- mvtnorm::rmvnorm(nsim, fit$glm_coef, fit$covmat)
+  new_betas <- MASS::mvrnorm(nsim, fit$glm_coef, fit$covmat)
+  p_sim <- matrix(NA, nrow = nrow(newdata), ncol = nsim)
+  
+  for (iter in 1L:nsim) {
+    new_beta <- new_betas[iter, , drop = FALSE]
+    
+    new_discps <- convert_coef_to_disclap_parameters_internal(new_beta, nrow(fit$y))
+    
+    new_wic <- rcpp_calculate_wic(fit$x, fit$y, new_discps, fit$tau)
+    new_vic_matrix <- rcpp_calculate_vic(new_wic)
+    
+    new_tau_vector <- apply(new_vic_matrix, 2, sum) / nrow(fit$x)
+    
+    new_ys <- move_centers(fit$x, fit$y, new_vic_matrix)
+    
+    try({
+      ps_new <- rcpp_calculate_haplotype_probabilities(newdata, new_ys, new_discps, new_tau_vector)
+      p_sim[, iter] <- ps_new
+    })
+  }
+  
+  p_sim_mean <- apply(p_sim, 1, mean, na.rm = TRUE)
+  p_sim_sd <- apply(p_sim, 1, sd, na.rm = TRUE)
+  
+
+  #p_sim_qs <- t(apply(p_sim, 1, quantile, c(0.005, 0.025, 0.05, 0.95, 0.975, 0.995)))
+  #colnames(p_sim_qs) <- paste0("q", gsub("%", "perc", fixed = TRUE, colnames(p_sim_qs)))
+
+  #return(data.frame(mean = p_sim_mean, sd = p_sim_sd, p_sim_qs))
+  
+  return(data.frame(mean = p_sim_mean, sd = p_sim_sd))
+}
+
+
+
+
+predict_with_variance_rnd_ys <- function(fit, newdata, nsim = 1000L) {
+  stopifnot(nsim >= 1L) 
+  
+  #new_betas <- mvtnorm::rmvnorm(nsim, fit$glm_coef, fit$covmat)
+  new_betas <- MASS::mvrnorm(nsim, fit$glm_coef, fit$covmat)
+  p_sim <- matrix(NA, nrow = nrow(newdata), ncol = nsim)
+  
+  for (iter in 1L:nsim) {
+    new_beta <- new_betas[iter, , drop = FALSE]
+    
+    new_discps <- convert_coef_to_disclap_parameters_internal(new_beta, nrow(fit$y))
+    
+    # new
+    new_ys <- fit$y
+    for (j in 1L:nrow(fit$y)) {
+      for (k in 1L:ncol(fit$x)) {
+        new_ys[j, k] <- disclap::rdisclap(1, new_discps[j, k]) + fit$y[j, k]
+      }
+    }
+    
+    new_wic <- rcpp_calculate_wic(fit$x, new_ys, new_discps, fit$tau)
+    new_vic_matrix <- rcpp_calculate_vic(new_wic)
+    
+    new_tau_vector <- apply(new_vic_matrix, 2, sum) / nrow(fit$x)
+    
+    #new_ys <- move_centers(fit$x, fit$y, new_vic_matrix)
+    
+    try({
+      ps_new <- rcpp_calculate_haplotype_probabilities(newdata, new_ys, new_discps, new_tau_vector)
+      p_sim[, iter] <- ps_new
+    })
+  }
+  
+  p_sim_mean <- apply(p_sim, 1, mean, na.rm = TRUE)
+  p_sim_sd <- apply(p_sim, 1, sd, na.rm = TRUE)
+  
+
+  #p_sim_qs <- t(apply(p_sim, 1, quantile, c(0.005, 0.025, 0.05, 0.95, 0.975, 0.995)))
+  #colnames(p_sim_qs) <- paste0("q", gsub("%", "perc", fixed = TRUE, colnames(p_sim_qs)))
+
+  #return(data.frame(mean = p_sim_mean, sd = p_sim_sd, p_sim_qs))
+  
+  return(data.frame(mean = p_sim_mean, sd = p_sim_sd))
+}
+
 
 

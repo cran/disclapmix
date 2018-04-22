@@ -1,3 +1,20 @@
+#' Generate a mixture
+#' 
+#' This function can generate a mixture given a list of contributors.
+#' 
+#' 
+#' @param profiles A list with profiles to mix.
+#' @return A list, e.g. for use with \code{\link{contributor_pairs}}. See
+#' example usage at \code{\link{rank_contributor_pairs}}.
+#' @seealso \code{\link{contributor_pairs}}
+#' \code{\link{rank_contributor_pairs}} \code{\link{disclapmix-package}}
+#' \code{\link{disclapmix}} \code{\link{disclapmixfit}}
+#' \code{\link{clusterprob}} \code{\link{predict.disclapmixfit}}
+#' \code{\link{print.disclapmixfit}} \code{\link{summary.disclapmixfit}}
+#' \code{\link{simulate.disclapmixfit}} %\code{\link{haplotype_diversity}}
+#' \code{\link[disclap:disclap-package]{disclap}}
+#' @keywords mixture separation deconvolution
+#' @export
 generate_mixture <- function(profiles) {
   if (!is.list(profiles)) stop("profiles must be a list")
   if (length(profiles) <= 0L) stop("No profiles provided")
@@ -60,6 +77,27 @@ generate_mixture <- function(profiles) {
 }
 
 # R saves matrices in column major order, hence each column is a haplotype.
+
+
+#' Contributor pairs from a 2 person mixture
+#' 
+#' Get all possible contributor pairs from a 2 person mixture
+#' 
+#' @param mixture A list of integer vectors. The k'th element in the list is an
+#' integer vector with the alleles in the mixture at locus k.
+#' @return A \code{contrib_pairs} object that is a unordered list of pairs.
+#' Note, that contributor order is disregarded so that each contributor pair is
+#' only present once (and not twice as would be the case if taking order into
+#' consideration). See example usage at \code{\link{rank_contributor_pairs}}.
+#' @seealso \code{\link{rank_contributor_pairs}} \code{\link{generate_mixture}}
+#' \code{\link{disclapmix-package}} \code{\link{disclapmix}}
+#' \code{\link{disclapmixfit}} \code{\link{clusterprob}}
+#' \code{\link{predict.disclapmixfit}} \code{\link{print.disclapmixfit}}
+#' \code{\link{summary.disclapmixfit}} \code{\link{simulate.disclapmixfit}}
+#' %\code{\link{haplotype_diversity}}
+#' \code{\link[disclap:disclap-package]{disclap}}
+#' @keywords mixture separation deconvolution
+#' @export
 contributor_pairs <- function(mixture) {
   if (!is.list(mixture)) stop("mixture must be a list")
   if (any(!unlist(lapply(mixture, is.integer)))) stop("Elements of mixture must be integer vectors")
@@ -110,6 +148,66 @@ contributor_pairs <- function(mixture) {
   return(ans)
 }
 
+
+
+#' Separate a 2 person mixture
+#' 
+#' Separate a 2 person mixture by ranking the possible contributor pairs.
+#' 
+#' @param contrib_pairs A \code{contrib_pairs} object obtained from
+#' \code{\link{contributor_pairs}}.
+#' @param fit A \code{\link{disclapmixfit}} object.
+#' @param max_rank Not used. Reserved for future use.
+#' @return A \code{ranked_contrib_pairs} object that is basically an order
+#' vector and the probabilities for each pair (in the same order as given in
+#' \code{contrib_pairs}), found by using \code{fit}. Note, that contributor
+#' order is disregarded so that each contributor pair is only present once (and
+#' not twice as would be the case if taking order into consideration).
+#' @seealso \code{\link{contributor_pairs}} \code{\link{generate_mixture}}
+#' \code{\link{disclapmix-package}} \code{\link{disclapmix}}
+#' \code{\link{disclapmixfit}} \code{\link{clusterprob}}
+#' \code{\link{predict.disclapmixfit}} \code{\link{print.disclapmixfit}}
+#' \code{\link{summary.disclapmixfit}} \code{\link{simulate.disclapmixfit}}
+#' %\code{\link{haplotype_diversity}}
+#' \code{\link[disclap:disclap-package]{disclap}}
+#' @keywords mixture separation deconvolution
+#' @examples
+#' 
+#' data(danes)
+#' db <- as.matrix(danes[rep(1L:nrow(danes), danes$n), 1L:(ncol(danes) - 1L)])
+#' 
+#' set.seed(1)
+#' true_contribs <- sample(1L:nrow(db), 2L)
+#' h1 <- db[true_contribs[1L], ]
+#' h2 <- db[true_contribs[2L], ]
+#' db_ref <- db[-true_contribs, ]
+#' 
+#' h1h2 <- c(paste(h1, collapse = ";"), paste(h2, collapse = ";"))
+#' tab_db <- table(apply(db, 1, paste, collapse = ";"))
+#' tab_db_ref <- table(apply(db_ref, 1, paste, collapse = ";"))
+#' tab_db[h1h2]
+#' tab_db_ref[h1h2]
+#' 
+#' rm(db) # To avoid use by accident
+#' 
+#' mixture <- generate_mixture(list(h1, h2))
+#' 
+#' possible_contributors <- contributor_pairs(mixture)
+#' possible_contributors
+#' 
+#' fits <- lapply(1L:5L, function(clus) disclapmix(db_ref, clusters = clus))
+#' 
+#' best_fit_BIC <- fits[[which.min(sapply(fits, function(fit) fit$BIC_marginal))]]
+#' best_fit_BIC
+#' 
+#' ranked_contributors_BIC <- rank_contributor_pairs(possible_contributors, best_fit_BIC)
+#' ranked_contributors_BIC
+#' 
+#' plot(ranked_contributors_BIC, top = 10L, type = "b")
+#' 
+#' get_rank(ranked_contributors_BIC, h1)
+#' 
+#' @export
 rank_contributor_pairs <- function(contrib_pairs, fit, max_rank = NULL) {
   if (!is(contrib_pairs, "contrib_pairs")) stop("contrib_pairs must be a contrib_pairs object")
   if (!is(fit, "disclapmixfit")) stop("fit must be a disclapmixfit object")
@@ -163,6 +261,12 @@ rank_contributor_pairs <- function(contrib_pairs, fit, max_rank = NULL) {
   return(ans)
 }
 
+#' Print contributor pairs
+#' 
+#' @param x A \code{contrib_pairs} object.
+#' @param \dots Ignored
+#' 
+#' @export
 print.contrib_pairs <- function(x, ...) {
   if (!is(x, "contrib_pairs")) stop("x must be a contrib_pairs")
   
@@ -175,6 +279,16 @@ print.contrib_pairs <- function(x, ...) {
   return(invisible(NULL))
 }
 
+#' Print ranked contributor pairs
+#' 
+#' @param x A \code{ranked_contrib_pairs} object.
+#' @param top The top ranked number of pairs to print/plot. \code{NULL} for
+#' all.
+#' @param hide_non_varying_loci Whether to hide alleles on loci that do not
+#' vary.
+#' @param \dots Ignored
+#' 
+#' @export
 print.ranked_contrib_pairs <- function(x, top = 5L, hide_non_varying_loci = TRUE, ...) {
 
   if (!is(x, "ranked_contrib_pairs")) stop("x must be a ranked_contrib_pairs")
@@ -191,7 +305,7 @@ print.ranked_contrib_pairs <- function(x, top = 5L, hide_non_varying_loci = TRUE
   
   not_printed <- NA
   top <- min(top, x$info$pairs_count)
-  
+    
   if (x$info$pairs_count > top) {
     not_printed <- x$info$pairs_count - top
   }
@@ -246,6 +360,15 @@ print.ranked_contrib_pairs <- function(x, top = 5L, hide_non_varying_loci = TRUE
   return(invisible(NULL))
 }
 
+#' Plot ranked contributor pairs
+#' 
+#' @param x A \code{ranked_contrib_pairs} object.
+#' @param top The top ranked number of pairs to print. \code{NULL} for
+#' all.
+#' @param \dots Delegated to the generic \code{\link[graphics]{plot}} function.
+#' @param xlab Graphical parameter.
+#' @param ylab Graphical parameter.
+#' @export
 plot.ranked_contrib_pairs <- function(x, top = NULL, ..., xlab = "Rank", ylab = "P(H1)P(H2)") {
 
   if (!is(x, "ranked_contrib_pairs")) stop("x must be a ranked_contrib_pairs")
@@ -272,6 +395,11 @@ plot.ranked_contrib_pairs <- function(x, top = NULL, ..., xlab = "Rank", ylab = 
   return(plot(xs, ys, xlab = xlab, ylab = ylab, ...))
 }
 
+#' Get rank of pair
+#' 
+#' @param x A \code{ranked_contrib_pairs} object.
+#' @param haplotype A haplotype.
+#' @export
 get_rank <- function(x, haplotype) {
   if (!is(x, "ranked_contrib_pairs")) stop("x must be a ranked_contrib_pairs")
   
