@@ -36,6 +36,30 @@ To read a vignette, type:
 vignette("introduction", package = "disclapmix")
 ```
 
+### Running tests
+
+Note that to also install the tests, you need to install the package as follows:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("mikldk/disclapmix", INSTALL_opts="--install-tests")
+```
+
+You can now run the tests:
+
+``` r
+library(disclapmix)
+library(testthat)
+test_package('disclapmix')
+```
+
+## Contribute, issues, and support
+
+Please use the issue tracker at <https://github.com/mikldk/disclapmix/issues> 
+if you want to notify us of an issue or need support.
+If you want to contribute, please either create an issue or make a pull request.
+
+
 ## References
 
 Andersen MM, PS Eriksen, N Morling (2013). 
@@ -54,9 +78,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## License
 
-License: GPL (>= 2).
+License: GPL-2.
 
-## Build status
+## Badges
+
+The Journal of Open Source Software:
+
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.00748/status.svg)](https://doi.org/10.21105/joss.00748)
+
+Zenodo: 
+
+[![DOI](https://zenodo.org/badge/130306482.svg)](https://zenodo.org/badge/latestdoi/130306482)
 
 Travis CI:
 
