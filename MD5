@@ -1,7 +1,7 @@
-63361cc3663decedfb07174dc836a2f7 *DESCRIPTION
+412e465748f4e2388ac7cfd0a8d7a747 *DESCRIPTION
 b234ee4d69f5fce4486a80fdaf4a4263 *LICENSE
 d8faa1dae5993b6f37ddf05dd6ba4de5 *NAMESPACE
-0d70a44e645a299714c2e80662da2ef6 *NEWS
+ea0222af17d8e2f7ff9061b4b69c98e3 *NEWS
 dd4cdef095b4e5f4baf6762157a2ad3f *R/RcppExports.R
 c7ac675b9104d1ef0819856ee5a1c9bb *R/clusterdist.R
 1a9d3bcb9db209d0dba72c0429e13b97 *R/clusterprob.R
@@ -18,10 +18,10 @@ efeb0a7829412d55ea9ded5eddbb49d1 *demo/00Index
 734a93e61dfa154c32f8f054cdb79f15 *inst/CITATION
 6be21db4bfc81ec84363b483c2f5de2b *inst/doc/introduction.R
 4d758bf3eb8cb464d6c30da8925252d4 *inst/doc/introduction.Rmd
-4f037c121c19e9d19d84fd4c0ff54e89 *inst/doc/introduction.html
+6c1ab9c790ebd8ce9765346d3bac8553 *inst/doc/introduction.html
 31630232592d6769c4946319167a511a *inst/doc/mixtures.R
 98a0e75c428a838c72804c3b6e3e7ba2 *inst/doc/mixtures.Rmd
-5793ab65b085989604ad83ed8ebebc0e *inst/doc/mixtures.html
+91fe4115a5470564c36c81d3f67747c2 *inst/doc/mixtures.html
 060e34d7549434c57324f42773798b7c *man/clusterdist.Rd
 3a2f1fdced3519669e2fe2f953f6816f *man/clusterprob.Rd
 697bc58c71f23be99a01d7a0eab5ba1e *man/contributor_pairs.Rd
@@ -45,8 +45,8 @@ b39ae5469bc86297e2161d9dadad3e41 *src/RcppExports.cpp
 7482808bf732b01dd9290192634f802a *src/helper.cpp
 ea806f18ac2cb0176f4289fad8a9be3a *src/proto.cpp
 645c6cc6f6e713e6fa440188d1df1754 *tests/testthat.R
-6a813dc6786c5c04179541baf42db606 *tests/testthat/test-disclapmix.R
-6f96319a240817de6cadd13451f47d3a *tests/testthat/test-mixtures.R
+0a7a336a6eecc43991009d8c4a64676f *tests/testthat/test-disclapmix.R
+90ce4f924ab17bdc9900c75db2f587ca *tests/testthat/test-mixtures.R
 4d758bf3eb8cb464d6c30da8925252d4 *vignettes/introduction.Rmd
 98a0e75c428a838c72804c3b6e3e7ba2 *vignettes/mixtures.Rmd
 2b3da6856bf7650e2d461e168814a1bb *vignettes/refs.bib
