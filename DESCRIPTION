@@ -1,7 +1,7 @@
 Package: disclapmix
 Type: Package
 Title: Discrete Laplace Mixture Inference using the EM Algorithm
-Version: 1.7.3
+Version: 1.7.4
 Authors@R: c(
     person(given = "Mikkel Meyer", family = "Andersen", 
         email = "mikl@math.aau.dk", role = c("aut", "cre")),
@@ -24,9 +24,9 @@ VignetteBuilder: knitr
 SystemRequirements: C++11
 Encoding: UTF-8
 URL: http://dx.doi.org/10.1016/j.jtbi.2013.03.009
-        http://arxiv.org/abs/1304.2129
-RoxygenNote: 6.1.1
+        https://arxiv.org/abs/1304.2129
+RoxygenNote: 7.2.0
 NeedsCompilation: yes
-Packaged: 2019-03-12 13:24:39 UTC; mikl
+Packaged: 2022-06-29 13:57:15 UTC; mikl
 Repository: CRAN
-Date/Publication: 2019-03-12 14:06:14 UTC
+Date/Publication: 2022-06-29 14:10:02 UTC

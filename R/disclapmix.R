@@ -43,6 +43,10 @@
 #' @param init_y_method Which cluster method to use for finding initial central
 #' haplotypes, y: \code{pam} (recommended) or \code{clara}. Ignored if
 #' \code{init_y} is supplied.
+#' @param init_v Matrix with `nrow(x)` rows and `clusters` columns specifying 
+#' initial posterior probabilities to get EM started, if
+#' none specified, then `matrix(1/clusters, nrow = nrow(x), ncol = clusters)` is used.
+#' @param ret_x Return data `x`
 #' @param ... Used to detect obsolete usage (when using parameters
 #' \code{centers}, \code{use.parallel}, \code{calculate.logLs} or
 #' \code{plots.prefix}).
@@ -54,7 +58,8 @@
 #' choosing initial central haplotypes (only used if \code{init_y} is
 #' \code{NULL}).}
 #' \item{list("converged")}{Whether the estimation converged or not.}
-#' \item{list("x")}{Dataset used to fit the model.} \item{list("y")}{The
+#' \item{list("x")}{Dataset used to fit the model if `ret_x` is `TRUE`, else `NULL`.} 
+#' \item{list("y")}{The
 #' central haplotypes, \code{y}.} \item{list("tau")}{The prior probabilities of
 #' belonging to a cluster, \code{tau}.} \item{list("v_matrix")}{The matrix
 #' \code{v} of each observation's probability of belonging to a certain
@@ -127,8 +132,16 @@
 #' fit2$tau
 #' 
 #' @export
-disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.001, verbose = 0L, 
-  glm_method = "internal_coef", glm_control_maxit = 50L, glm_control_eps = 1e-6, init_y_method = "pam", ...) {
+disclapmix <- function(x, clusters, 
+                       init_y = NULL, 
+                       iterations = 100L, eps = 0.001, verbose = 0L, 
+                       glm_method = "internal_coef", 
+                       glm_control_maxit = 50L, 
+                       glm_control_eps = 1e-6, 
+                       init_y_method = "pam", 
+                       init_v = NULL, 
+                       ret_x = FALSE,
+                       ...) {
   
   dots <- list(...)
   
@@ -285,6 +298,30 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
   }
   
   vic_matrix <- matrix(1/clusters, nrow = nrow(x), ncol = nrow(y))
+  
+  if (!is.null(init_v)) {
+    if (nrow(init_v) != nrow(x)) {
+      stop("nrow(init_v) != nrow(x)")
+    } else if (ncol(init_v) != nrow(y)) {
+      stop("ncol(init_v) != nrow(y)")
+    } else if (any(init_v < 0)) {
+      stop("any(init_v < 0)")
+    } else if (any(init_v > 1)) {
+      stop("any(init_v > 1)")
+    }
+    
+    init_v_sum <- apply(init_v, 1, sum)
+    if (any(abs(init_v_sum - 1) > 1e-6)) {
+      stop("any(abs(init_v_sum - 1) > 1e-6)")
+    }
+    
+    if (verbose >= 1L) {
+      cat(as.character(Sys.time()), ": Using user-specified init_v matrix.\n", sep = "")
+    }
+    
+    vic_matrix <- init_v
+  } 
+  
   #vic_matrix <- matrix(runif(nrow(x)*nrow(y), 0.2, 0.8), nrow = nrow(x), ncol = nrow(y))
   #vic_matrix <- vic_matrix / rowSums(vic_matrix)
   weight_vector <- rcpp_create_new_weight_vector(vic_matrix, ncol(y))
@@ -558,7 +595,16 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
       eps, " (only reached ", v_gain, ")", sep = "")
     warning(msg)
   }
+  
+  x_to_return <- if (length(ret_x) == 1L && 
+                     is.logical(ret_x) && 
+                     ret_x == TRUE) {
+    x
+  } else {
+    NULL
+  }
 
+  
   ans <- list(
     glm_method = glm_method,
 #    glm_control_maxit = glm_control_maxit,
@@ -570,7 +616,7 @@ disclapmix <- function(x, clusters, init_y = NULL, iterations = 100L, eps = 0.00
     #fit = fit,
 
     converged = converged,
-    x = x,
+    x = x_to_return,
 
     y = y,
     tau = tau_vector,
