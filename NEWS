@@ -1,3 +1,22 @@
+Changes in version 1.7.5
+  * New vignette "Adaptive fitting"
+  * `disclapmix_adaptive()`:
+      - Allowing to take `label` and generators for `init_y` (`init_y_generator`) and 
+        `init_v` (`init_v_generator`) - refer to the "Adaptive fitting" vignette.
+      - Allowing `disclapmix_adaptive()` to take multiple `criteria`'s 
+      - Not necessary to supply `_marginal` suffix for `criteria`
+  * Add `cluster` argument to `simulate()` to force simulating from a 
+    particular cluster
+  * `disclapmix()` for `glm_method` `glm.fit`: `covmat` calculated more efficiently
+  * Parameters for `disclapmix_robust()` controlling retries with random subsets
+  * Include check for if data contains `NA`'s
+  * New `init_y_method`: `hclust`
+  * `predict` can now accept NA values, in which case that locus is 
+    ignored (corresponding to marginalising over that locus).
+  * Remove "fwsim" Suggest
+  * Add `export_compact_fit` method for easier exporting fits for prediction (e.g., to JSON)
+  * CRAN fixes
+
 Changes in version 1.7.4
   * `disclapmix()` takes new agument: `init_v` (initial posterior probabilities 
      to get EM started)

@@ -41,7 +41,7 @@
 #' \code{x = beta_correction} for \code{internal_coef} and \code{x = deviance}
 #' otherwise.
 #' @param init_y_method Which cluster method to use for finding initial central
-#' haplotypes, y: \code{pam} (recommended) or \code{clara}. Ignored if
+#' haplotypes, y: \code{pam} (recommended), \code{clara} or \code{hclust}. Ignored if
 #' \code{init_y} is supplied.
 #' @param init_v Matrix with `nrow(x)` rows and `clusters` columns specifying 
 #' initial posterior probabilities to get EM started, if
@@ -219,7 +219,9 @@ disclapmix <- function(x, clusters,
   ##
   
   if (is.null(init_y) && (
-        is.null(init_y_method) || !is.character(init_y_method) || length(init_y_method) != 1L || (init_y_method != "pam" && init_y_method != "clara")
+        is.null(init_y_method) || !is.character(init_y_method) || length(init_y_method) != 1L || (init_y_method != "pam" && 
+                                                                                                  init_y_method != "clara" && 
+                                                                                                  init_y_method != "hclust")
      )) {
     stop("The specified init_y_method is not valid, please refer to the documentation.")
   }
@@ -407,7 +409,10 @@ disclapmix <- function(x, clusters,
           control = glm.control(trace = (verbose >= 2L), epsilon = glm_control_eps, maxit = glm_control_maxit))
         disclap_parameters <- convert_coef_to_disclap_parameters(fit$coefficients, clusters)
         
-        covmat <- solve(t(model_matrix) %*% diag(fit$weights) %*% model_matrix) # assumens dispersion is 1 # Intercept is missing
+        # 1.7.5: 2023-01-24
+        #covmat <- solve(t(model_matrix) %*% diag(fit$weights) %*% model_matrix) # assumens dispersion is 1 # Intercept is missing
+        covmat <- solve(t.default(model_matrix) %*% (fit$weights * model_matrix)) # assumens dispersion is 1 # Intercept is missing
+        
         #covmat <- chol2inv(fit$qr$qr) 
         covmat_nms <- c(paste0("cluster", 1L:clusters), colnames(x)[-1L])
         #colnames(covmat) <- rownames(covmat) <- covmat_nms

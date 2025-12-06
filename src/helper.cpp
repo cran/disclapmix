@@ -150,6 +150,10 @@ NumericVector rcpp_calculate_haplotype_probabilities(IntegerMatrix new_data, Int
       double component_prob = tau(c);
       
       for (int l = 0; l < loci; l++) {
+        if (Rcpp::IntegerVector::is_na(h(l))) {
+          continue;
+        }
+        
         double pcl = p(c, l);
         component_prob *= pow(pcl, abs(h(l) - yhap(l)))*((1-pcl)/(1+pcl));
       }
@@ -228,6 +232,29 @@ IntegerMatrix rcpp_simulate(int nsim, IntegerMatrix y, NumericVector tau_cumsum,
       }
     }
     
+    IntegerVector hap = y(origin, Rcpp::_);
+    
+    for (int k = 0; k < loci; k++) {
+      hap[k] += rdisclap_single(disclap_parameters(origin, k));
+    }
+    
+    res(i, Rcpp::_) = hap;
+  }
+  
+  return res;
+}
+
+
+// [[Rcpp::export]]
+IntegerMatrix rcpp_simulate_cluster(int nsim, IntegerMatrix y, int cluster, NumericMatrix disclap_parameters) {
+  int loci = y.ncol();
+  int clusters = y.nrow();
+  
+  int origin = cluster - 1; // R is 1-based, C++ 0-based
+  
+  IntegerMatrix res(nsim, loci);
+  
+  for (int i = 0; i < nsim; i++) {
     IntegerVector hap = y(origin, Rcpp::_);
     
     for (int k = 0; k < loci; k++) {
